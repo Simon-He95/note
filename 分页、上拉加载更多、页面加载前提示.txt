@@ -1,0 +1,87 @@
+分页
+1.需要封装axios数据在methods中：
+        loadGoodsByPage(){
+          this.$axios('getgoods/?pageindex=${this.page}')
+            .then(res=>{
+              console.log(res.data.message);
+	
+              if(res.data.message.length == 0){
+                //如果数据为空，则把allLoaded状态改为true，禁止上拉，全部加载完成
+                this.allLoaded = true;
+                this.$toast("没有数据了");
+              }
+              if(this.page==1){
+                this.goodsList = res.data.message;
+              }else{
+                this.goodsList = this.goodsList.concat(res.data.message);
+              }
+              this.page++;
+            })
+            .catch(err=>{
+              console.log("商品列表分页 失败",err);
+            })
+        }
+2.在created中调用一次，加载第一页的数据
+    this.loadGoodsByPage();
+
+如果需要在上拉时加载更多数据：
+1.在template中
+<div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
+    <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" ref="loadmore">
+	          //中间放需要请求的数据
+    </mt-loadmore>
+</div>
+2.  在data中需要定义这几个参数
+   data(){
+          return{
+            page:this.$route.params.page,
+            goodsList:[],
+            allLoaded:false,   //是否全部加载，默认为false，当数据全部显示完了，改为true
+            autoFill:false
+          }
+3.在method中
+       loadBottom(){
+          console.log("上拉被调用了");
+          this.loadGoodsByPage();     //上拉时调用
+          //通知状态发生改变，否则一直会loading
+          this.$refs.loadMore.onBottomLoaded();
+        },
+        handleBottomChange(status){
+          console.log(status);	//监听状态，开始滚动是pull，然后上拉是drop，释放会显示“上拉被调用了”
+        },
+
+4.为了避免上拉机制自动触发的bug，需要在mounted中,并在template上把auto-fill改为false
+ mounted() {
+      this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
+    }
+
+<div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
+    <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" ref="loadmore" auto-fill="autoFill">
+</div>
+
+页面加载前，弹出提示信息：
+在main.js中：
+   //引入mint-ui 全部组件
+   import MintUI from 'mint-ui'
+   import 'mint-ui/lib/style.css'
+   Vue.use(MintUI);
+
+   //添加请求拦截器，页面加载前弹出提示
+   Axios.interceptors.request.use(function (response) {
+     //对响应数据做点什么
+     //在请求之前，加载提示框
+     MintUI.Indicator.open('加载中...')
+     return response;
+   },function (error) {
+  //对响应错误做点什么
+  return Promise.reject(error);
+   })
+   Axios.interceptors.response.use(function (response) {
+     //响应完成后，关闭加载提示框
+     MintUI.Indicator.close();
+     //对象与数据做点什么
+     return response;
+   },function (error) {
+     //对响应错误做点什么
+     return Promise.reject(error);
+   })

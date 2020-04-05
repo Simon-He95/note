@@ -1,0 +1,44 @@
+1.npm install animate.css
+
+2.在main.js引入 
+
+import animate from 'animate.css'
+
+Vue.use(animate);
+
+3.使用在transition上加class（transition只能让内部第一组运动）
+    <transition  enter-active-class="zoomInLeft" leave-active-class="zoomOutRight">
+      <div class="ball animated" v-show="isExist" ></div>	//animated必须要加，否则不会动
+    </transition>
+
+4.（transition只能让内部第一组运动），如果需要多组动画需要使用transition-group，并且需要给到一个key
+    <transition-group  enter-active-class="zoomInLeft" leave-active-class="zoomOutRight">
+      <div class="ball animated" v-show="isExist" :key="1"></div>
+      <div class="ball animated" v-show="isExist" :key="2"></div>
+    </transition-group>
+
+5.类似搜索框，输入a弹出所有含有a的
+    <input type="text" v-model="show">
+    <ul>
+      <li v-show="show" v-for="(val,index) in lists" :key="index">
+        {{val}}
+      </li>
+    </ul>
+
+  data(){
+    return{
+      list:['apple','banana','orange','pear'],
+      show:""
+    }
+  },
+  computed:{
+    lists(){
+      var arr = [];
+      this.list.forEach((val)=>{
+        if(val.indexOf(this.show)!=-1){
+          arr.push(val);
+        }
+      })
+      return arr;
+    }
+  },

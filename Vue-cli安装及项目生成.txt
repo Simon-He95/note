@@ -1,0 +1,36 @@
+安装Vue-cli
+执行：npm install -g vue-cli
+新建一个项目：vue init webpack my-cli
+
+移动端：mint ui 		   https://cloud.tencent.com/developer/section/1489959
+   npm install mint-ui -S
+
+PC端：Element UI		   https://element.eleme.cn/2.0/#/zh-CN/component/installation
+   npm i element-ui -S
+
+在main.js中引入mint ui
+import MintUI from 'mint-ui'
+import 'mint-ui/lib/style.css'
+Vue.use(MintUI)
+
+mt-tab底部选项卡需要监听到点击得id来做路由得跳转
+ watch:{
+      selected:function (newV,oldV) {
+        console.log(newV);
+        this.$router.push({name:this.selected});	//匹配到 mt-table-item 的id
+      }
+    }
+然后再新建对应的.vue通过router文件夹下的index.js导入对应的vue文件，并再routes里配置
+import News from "../components/News/News";
+    {
+      path: '/cart',
+      name: 'cart',
+      component: Cart
+    },
+
+页面间的传值	props
+    props: ['title'],然后把该vue文件导入到公共的main.js	
+         //引入全局导航栏组建
+         import Navbar from './components/Common/Navbar'
+         Vue.component(Navbar.name,Navbar);
+  通过      <Navbar title="新闻列表"></Navbar>来实现

@@ -1,0 +1,51 @@
+注意：better-scroll使用的条件内部的长度需要超出外部的盒子才可滚动，异步时props的数据可能拿到会为空
+，需要在method中写一个_initScroll的方法，然后在watch中监听props里的数据，一旦发生变化时，再调用这个_initScroll方法，此时的dom高度才是正确的滚动，
+同时需要再mounted中也调用_initScroll的方法，否则路由切换时候，滚动会出问题
+
+*better-scroll会默认阻止一些点击事件如果，使用的时候，需要使用click：true // this.menuScroll = new BScroll(this.menuWrapper,{click:true})
+
+*监听滚动位置：            
+this.foodScroll = new BScroll(this.foodWrapper,{probeType:3})	//需要传入probeType:3，在通过.on的方法拿到pos.y
+            this.foodScroll.on('scroll',(pos)=>{
+              this.scrollY = Math.abs(Math.round(pos.y)); //讲better-scroll监听的y转换为整数，并取绝对值
+            })
+
+
+better-scroll 托管在 Npm 上，执行如下命令安装：
+
+npm install better-scroll --save
+
+使用：在组件上通过ref属性在mounted中获取到dom，然后通过better-scroll，把这个方法在created获取数据时，调用一下这个方法
+
+ import BScroll from 'better-scroll'		//引入
+
+      <div class="foods-wrapper" ref="foodWrapper"></div>
+
+
+      methods:{
+          _initScroll(){
+            this.menuScroll = new BScroll(this.menuWrapper,{})	//通过new BScroll 即可实现
+            this.foodScroll = new BScroll(this.foodWrapper,{})
+          },
+      },
+      mounted() {
+        this.menuWrapper = this.$refs.menuWrapper
+        this.foodWrapper = this.$refs.foodWrapper
+        console.log( this.foodWrapper)
+      }
+
+        created() {
+            this.$axios.get('/api/goods').then(res=>{
+              if (res.data.errno === ERR_OK){
+                this.goods = res.data.data;
+                console.log(this.goods)
+                this._initScroll();
+              }
+            }).catch(err=>{
+              console.log(err)
+            }),
+         }
+
+//better-scroll图片横向滚动
+scrollX要设置为true，但同时纵向也可以滚动，需要设置eventPassthrough:'vertical'
+              this.picScroll = new BScroll(this.$refs.picWrapper,{scrollX: true,eventPassthrough:'vertical'})

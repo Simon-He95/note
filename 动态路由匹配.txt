@@ -1,0 +1,41 @@
+mode:'history' 可去除链接上的/#
+    var router = new VueRouter({
+       mode:'history',
+       routes:[{}]
+   })
+
+//当使用路由参数时，从/home/frontend导航到/home/backend,原来的组件实例会被服用。因为两个路由都渲染同一个组件，比起销毁再创建，复用则显得更高效。不过，这也意味着组件的生命周期钩子不会再被调用。
+created、mounted等等只会执行一次，可以通过watch来监听数据的变化
+
+ var Home = {
+    template:'<div>' +
+      '<router-link :to="{name:\'comDesc\',params:{id:\'frontend\'}}">前端</router-link>' +
+      '<router-link :to="{name:\'comDesc\',params:{id:\'backend\'}}">后端</router-link>' +
+      '<router-view></router-view>' +
+      '</div>'
+  };
+ var ComDesc ={
+    data(){
+      return{
+        msg:''
+      }
+    },
+    template:'<div>' +
+      '我是{{msg}}' +
+      '</div>',
+    created(){
+      this.msg ="前端"           //动态路由
+    },
+    watch:{                       //在当前的组件内部 监听路由信息的变化
+      $route(to,from){
+        console.log(to);
+        console.log(from);
+        this.msg = to.params.id;
+      }
+    }
+  }
+
+keep-alive在路由中的使用：
+<keep-alive></keep-alive>			缓存激活/停用，把整个组件的状态保存起来
+如果在当前页面点击了一个内容比如文字变色，切换到另一个路由，再返回，则当前路由渲染的被销毁了，根据需求如果需要保存，需要把router-view包裹在keep-alive中，会保留缓存
+<keep-alive><router-view></router-view></keep-alive>	

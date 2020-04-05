@@ -1,0 +1,57 @@
+安装 vue-loader
+指令：npm install vue-loader@14.1.1 vue-template-compiler@2.5.17 -D
+
+package.json中：除了vue安装-S到"dependencies"下，其它loader安装需要-D到devDependencies，vue的版本要和compiler一致npm install vue@2.5.17 -S
+
+1.需要新建一个App.vue文件	
+   <template>
+       <div>
+         {{msg}}
+       </div>
+   </template>
+
+   <script>
+         export default {
+               data(){
+                 return{
+                   msg:"'hello"
+                 }
+               }
+         }
+   </script>
+
+   <style>
+     body{
+       background-color:green;
+     }
+   </style>
+
+//App.vue包含3块内容
+<template></template> 
+<script>
+   export default{
+      data(){
+         return{msg:'hello'}
+      }
+   }
+</script> 
+<style></style>
+2.导入到main.js中			
+   import Vue from 'vue'
+   import App from './App.vue'
+
+   new Vue({
+     el:'#app',
+  
+     //vue 2.0 新增
+     //Render函数是vue2.0新增的一个函数；使用虚拟dom来渲染节点提升性能，因为它是基于JavaScript计算。
+     //通过使用createElement(h)来创建dom节点。createElement是render的核心方法
+     //其vue编译的时候会把template里面的节点解析成虚拟dom；
+     render:c=>c(App)
+   });
+
+3.在webpack.conifg.js中需要引入vue-loader
+      {
+        test:/\.vue$/,
+        loader:'vue-loader'
+      }

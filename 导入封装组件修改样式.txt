@@ -1,0 +1,26 @@
+提取公共组件，引入到其他模板中，可能有细微的padding等样式的调整，但是很难从父组件中去修改引入的子组件的样式
+
+可以通过 >>>来获取独有的属性，但是在Sass、scss之类的预处理器无法解析，但可以使用/deep/ 或 ::v-deep 操作符来取代>>>，这是两个都是 >>> 的别名，同样可以正常工作。
+引入组件：
+        import priceComponent from '../common/price/price'
+       <priceComponent :food="food"></priceComponent> 
+
+   css中：
+	<style scoped>
+	.priceComponent >>> .content .name{
+ 	   font-weight: 700 !important;
+  	}
+	</style>
+
+   sass、scss中“
+	<style lang='scss' scoped>
+	.a {
+   	 /deep/ .b{
+                /* ... */
+   	 }
+	}
+</style>
+
+
+
+

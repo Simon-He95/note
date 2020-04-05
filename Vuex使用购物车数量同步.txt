@@ -1,0 +1,138 @@
+安装Vuex
+执行：npm install vuex --save
+Vuex中核心概念：State、Getter、Mutation、Action、Module
+
+新建一个store.js
+import Vue from 'vue'
+//导入Vuex
+import Vuex from 'vuex'
+//注入
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+	//五大将
+	state:{
+		count:1
+	}
+});
+
+//将store实例挂载到main.js
+import store from './store'
+new Vue({
+  store,
+  el: '#app',
+  router,
+  components: { App },
+  template: '<App/>'
+})
+
+通过在computed中使用$store获取：
+
+    //普通获取store中的状态
+    // computed:{
+    //   count(){
+    //     return this.$store.state.count;
+    //   }
+    // },
+    // computed:mapState({
+    //     //1.箭头函数
+    //     count:state=>state.count,
+    //     //2.传字符串参数'count'等同于state = >state.count
+    //     countAlisa:'count',
+    //     countLocalState(state){
+    //       return state.count + this.num;
+    //     }
+    // }),
+    //对象的展开运算符
+    // computed:{
+    //   ...mapState({
+    //     countAlisa:'count',      //{{countAlisa}}来输出
+    //     countLocalState(state){
+    //       return state.count + this.num;
+    //     },
+    //       count:state=>state.count
+    //   })
+    // },
+    // computed:{
+    // 当前组件的计算属性的方法，跟store中state中key是一样的，那么可以使用下面此种简单的方式
+    //   ...mapState({
+    //       'count',
+    //       'msg'
+    //   })
+    // },
+
+修改state里的数据：
+  mutations:{
+    addNum(state,num){
+      state.count+=num;
+    }
+  }
+
+     methods:{
+        addCount(){
+          // this.$store.state.count++;  不能通过这种方式，去修改数据，唯一方法是提交mutation
+          this.$store.commit('addNum',1);	//每次加1
+        }
+      },
+
+异步调用需要在actions中去提交，然后在通过mutation去修改当前的值：
+  mutations:{
+    addNum(state,num){
+      state.count+=num;
+    },
+    addCountByasync(state,num){
+      state.count+=num;	//每次加num=5
+    }
+  },
+  actions:{
+    addCountByasync({commit},payload){
+      console.log(payload);	//{num：5}
+      setTimeout(()=>{
+        commit('addCountByasync',payload.num);
+      },1000)
+    }
+
+通过$store.dispatch来对应actions里面的方法和传值
+        addCountByasync(){
+          this.$store.dispatch('addCountByasync',{num:5});
+        }
+
+使用modules封装：（同样需要将store实例挂载到main.js）
+新建一个store文件夹，里面新建moduleA、moduleB，在moduleA中把原本store.js中的四大将拆分到state、getters、mutations、actions中，然后全部导入到index.js中：
+
+index.js:
+   import Vue from 'vue';
+   import Vuex from 'vuex';
+   import state from './state';
+   import getters from './getters'
+   import mutations from './mutations'
+   import actions from './actions'
+
+   Vue.use(Vuex);
+
+   export default {
+     state,
+     getters,
+     mutations,
+     actions
+   }
+最后在store.js中通过导入moduleA中的index.js完成封装：
+
+   import moduleA from './store/moduleA/index'
+   export default new Vuex.Store({
+     //五大将
+     modules:{
+       a:moduleA
+     }
+   })
+
+获取数据：
+ this.$store.state.a.count;
+
+在mutations中修改数据需注意：
+   // state.myProps.name = name; 此方法不能直接渲染，因为没有监听
+    //Mutation需遵守Vue的响应原则
+    //既然Vuex的store中的状态是响应式的，那么当我们变更状态时，监视状态vue的组件
+    //1.最好提前在你的store中初始化好所有所需属性。
+    //2.当需要在对象上添加新属性时，你应该用以下方法，手动设置，给state中状态添加属性
+    Vue.set(state.myProps,'name',name); //给state.myProps中添加‘name’，赋值为name

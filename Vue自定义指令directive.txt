@@ -1,0 +1,72 @@
+在main.js
+//注册一个全局的自定义指令
+//通过v-tack 固定定位
+
+//自定义指令：
+//      语法Vue.directive('指令的名',{})
+//      {}字面量方式创建
+//      生命周期的函数bind()只会执行一次
+//      update更新数据的时候会调用update
+//      在每个生命周期中 el：绑定dom的节点，binding：存储的是一堆对象
+//      binding属性中的参数：
+//      arg v-tack:top
+//      value：传递的值
+//      vnode.context获取当前组件的实例化对象
+
+Vue.directive('tack', {
+  bind(el, binding, vnode) {
+    console.log(el)
+    console.log(binding)
+    el.style.position = 'fixed';
+    el.style[binding.arg] = binding.value + 'px';
+  },
+  update(el,binding,vnode){   //通知更新
+    console.log(binding);
+    el.style[binding.arg] = binding.value + 'px';
+  }
+})
+通过   <h1 v-tack:left="pos">我是fixed</h1><button @click="move">按钮</button>  
+methods中方法： 
+   move(){
+      this.pos +=3;
+      console.log(this.pos)
+    },
+
+Vue.directive('scroll',{
+  //被插入的元素，插入到父节点会被调用
+  inserted(el,binding,vnode) {
+    console.log(vnode);	//vnode.context获取当前组件的实例化对象
+    window.addEventListener('scroll',vnode.context.scorllLoad); //获取到实例对象的滚动方法
+
+  }
+})
+通过     <div class="box" v-scroll="scorllLoad"> </div>
+methods中方法： 
+    scorllLoad(){
+      //滚动条高度
+      let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+      //文档高度
+      let bodyHeight = document.body.scrollHeight || document.documentElement.scrollHeight;
+
+      if(scrollTop + window.innerHeight >= bodyHeight - 50) {
+        console.log("触发滚动事件");
+      }
+
+      console.log(window.innerHeight);
+    }
+
+局部自定义指令： 	（定义在组件内部）
+   directives:{
+	//存放当前组件的多个指令
+	//focus:指令的名字
+	focus:{
+	   //指令的定义
+	   bind(el,binding,vnode){},
+	   inserted(el,binding,vnode){}
+	},
+	tack:{
+	   bind(el,binding,vnode){},
+	   inserted(el,binding,vnode){}
+	}
+   }
+通过 v-focus,v-tack来使用

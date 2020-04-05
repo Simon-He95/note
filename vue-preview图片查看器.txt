@@ -1,0 +1,43 @@
+1.安装vue-preview
+   执行：npm i vue-preview -S
+
+2.在main.js文件中导入该组件，并挂载到Vue身上
+   import VuePreview from 'vue-preview';
+   Vue.use(VuePreview);
+3.在自己的组件中使用它
+
+<template>
+    <div class="thumbs">
+        <vue-preview :slides="thumbsList" class="imgPrev"></vue-preview>
+  </div>
+</template>
+<script>
+export default {
+    data() {
+        return {
+            thumbsList: [],
+        };
+    },
+    methods: {
+        getThumbsList(){
+            this.$ajax({
+                method: "get",
+                url: "/thumbs/" ,
+            }).then(response => {
+                var data = response.data
+                if (data.Status == 0) {        
+                    data.Data.forEach(item => {
+                        item.w = 600;   //设置以大图浏览时的宽度
+                        item.h = 400;     //设置以大图浏览时的高度
+                        item.src = item.img_url;  //大图
+                        item.msrc = item.img_url;  //小图
+                    });            
+                    this.thumbsList = data.Data
+                } else {
+                    Toast('获取图片信息失败！');
+                }
+            });
+        },
+    },  
+};
+</script>

@@ -1,0 +1,29 @@
+//自定义moment全局时间过滤器
+1.安装moment.js
+执行：npm install moment --save
+
+2.main.js中引入：
+import Moment from 'moment'
+
+Vue.filter('convertTime',function (data,formatStr) {
+  return Moment(data).format(formatStr);
+})
+Vue.filter('relativeTime',function (data) {
+  return Moment(data).fromNow();  //从操作到现在的时间，几小时之前，几天之前
+})
+//设置时间为中文显示
+Moment.locale('zh-cn');
+
+使用方法：
+        <li>上架时间：{{goodsInfo.add_time | convertTime('YYYY-MM-DD')}}</li>
+
+YYYY	四位数字完整表示的年份	如：2014
+YY	两位数字表述的年份		如：14
+MM	数字表示的月份		如：01到12
+MMM	三个字母缩写表示的月份	如：Jan到Dec
+MMMM	月份，完整的文本格式	如：January到December
+HH	小时，24小时制		如：00到23
+H	小时，24小时制		如：0到23
+
+详细月份链接：
+https://www.cnblogs.com/MrZhujl/p/11398704.html

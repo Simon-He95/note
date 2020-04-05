@@ -1,0 +1,27 @@
+闭包：closure		希望数据被共享，同时被隐藏	
+是一种函数式编程的设计思路，也是能够读取函数内部变量的嵌套函数，且可以在外部访问（定义在一个函数内部的函数）
+具体方式：		//通过return在内部的函数
+function buy(){
+	var tickets =200;
+	function buyer(n){
+	tickets = tickets - n;
+	console.log(tickets);
+	}
+   	return buyer；
+}
+var b1 = buy();		//b1得到是buy内部的buyer函数，所以外部无法去修改tickets的值，达到保护局部变量
+b1(5);			//同时又可以数据共享
+
+函数的作用：
+1.增加代码复用性
+2.隐藏自己的作用域，保护了局部变量
+
+反闭包：不用自己内部定义的，而用外部全局的
+var n =10;
+function fn(){
+console.log(n)
+}
+(function(fk){
+	var n =20;
+	fk();	//此时的fk相当于fn，把后面的fn作为参数传入
+})(fn);		//返回的是全局的n= 10； 

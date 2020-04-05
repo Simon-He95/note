@@ -1,0 +1,64 @@
+1.路由要在history模式下才可以
+	mode:'history',	//去除了#的hash模式，基于H5中的history.pushState()函数，来添加历史记录
+
+2.通过路由中的scrollBehavior来监听，判断savedPosition来保存
+  scrollBehavior(to,from,savedPosition){
+    //只有调用了history.pushState()，才会触发
+    //return期望滚动到哪个位置
+
+    //判断如果滚动条的位置,存在直接放回当前位置，否则回到顶部
+    console.log(savedPosition); //只有在前进和后退或者go(-1)、forward()方法时才会调用
+
+    if(savedPosition){	//如果滚动了，保存当前滚动的距离，返回这个距离，否则返回到顶部
+      return savedPosition;
+    }else {
+      return {x:0,y:0};
+    }
+
+    return{x:0,y:200};
+  },
+
+不过这种模式要玩好，还需要后台配置支持。
+因为我们的应用是个单页客户端应用，如果后台没有正确的配置，当用户在浏览器直接访问 http://oursite.com/user/id 就会返回 404，这就不好看了。
+配置地址：https://router.vuejs.org/zh/guide/essentials/history-mode.html#%E5%90%8E%E7%AB%AF%E9%85%8D%E7%BD%AE%E4%BE%8B%E5%AD%90
+
+问题：新增需求，点击浏览器返回按钮或者详情页的返回按钮，需要返回列表页，并保存之前所有的状态。
+（地址：https://blog.csdn.net/yan263364/article/details/84402595）
+
+用 keep-alive 及 scrollBehavior 完美解决。
+第一，在 App.vue文件中，给路由加上 keep-alive
+<keep-alive>
+	<router-view v-if="$route.meta.keppAlive"><router-view> //可以被缓存的视图组件
+<keep-alive>
+
+第二，在 路由文件中 ：router/index.js，给被要被缓存的页面设置 meta 属性（这里就是列表页），不需要缓存的视图，不用添加
+routes:[
+   path:"./home",
+   name:"home",
+   component:Home
+   meta:{keepAlive:true}
+]
+
+第三，在详情页里面设置 beforeRouteLeave
+beforeRouterLeave(to,from,next){
+//设置下一个路由的meta，让列表页缓存，即不刷新
+   to.meta.keepAlive = true;
+   next();
+}
+
+最后一步， 实现滚动行为的代码：router/index.js
+const router = new Router({
+   mode:"hash,
+   scrollBehavior(to,from,savePosition){
+    }
+   if(savePosition){
+      return savePosition
+   }else{
+      return { x:0, y:0}
+   }
+})
+
+原本切换导航时，路由会记录滚动条的位置，为此写了一个方法，每次切换视图时，滚动条滚动到顶部
+router.afterEach((to,from,next)=>{
+   window.scrollTo(0,0)
+})

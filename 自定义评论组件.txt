@@ -1,0 +1,97 @@
+//注册全局评论组件
+import Comment from './components/Common/Comment'
+Vue.component(Comment.name,Comment);
+
+<template>
+  <div class="photo-bottom">
+    <ul>
+      <li class="photo-comment">
+        <div>
+          <span>提交评论</span>
+          <span><a href="">返回</a></span>
+        </div>
+      </li>
+      <li class="txt-comment">
+        <textarea cols="50" rows="10" v-model="commentContent"></textarea>
+      </li>
+      <li><mt-button type="primary" size="large" @click="commentHandler">发表评论按钮</mt-button></li>
+      <li class="photo-comment">
+        <div>
+          <span>评论列表</span>
+          <span>44条评论</span>
+        </div>
+      </li>
+    </ul>
+    <ul class="comment-list">
+      <li v-for="(comment,index) in comments" :key="index">
+        {{comment.user_name}}：{{comment.content}} {{comment.add_time | relativeTime}}
+      </li>
+    </ul>
+    <mt-button type="danger" size="large" @click="loadmore(page)">加载更多</mt-button>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "Comment",
+    data() {
+      return {
+        comments: [],
+        page:1,
+        commentContent:""
+      }
+    },
+    methods:{
+      //评论按钮事件操作
+      commentHandler(){
+        //post请求提交评论
+        this.$axios.post('postcomment/${this.cid}','content='+this.commentContent)
+          .then(res=>{
+            console.log(res.data.message);
+            //请求完，清空评论框内容
+            this.commentContent = "";
+            //加载第一页的数据,然后重新执行loadMore渲染数据，发表后可以直接显示到评论列表中
+            this.page = 1;
+            this.loadMore();
+          })
+          .catch(err=>{
+            console.log("评论失败",err);
+          })
+      },
+
+      //加载更多按钮事件操作
+      loadMore(page){         //loadMore封装了数据请求
+        this.$route.get('getcomments/${this.cid}?pageindex=${page}')
+          .then(res => {
+            console.log(res.data.message);
+
+            if(res.data.message.length ===0){
+              this.$toast("没有数据了");
+            }
+
+            if(page){
+                //加载更多，concat数组重新整合在传给comments中
+                this.comments = this.comments.concat(res.data.message);
+              }else{
+                //否则第一次加载
+                this.comments = res.data.message;
+              }
+              this.page++;
+          })
+          .catch(err => {
+            console.log("获取分页评论数据失败", err);
+          })
+      }
+    },
+    props: ['cid'],
+    created() {
+      //请求的api是 /getcomments/:artid?pageindex=1，既有params又有query
+      let page = this.$route.query.page || "1"; //默认显示第一页的评论
+      this.loadMore();
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>

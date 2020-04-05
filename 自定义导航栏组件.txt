@@ -1,0 +1,45 @@
+//导入自定义组件
+  通过      <Navbar title="新闻列表"></Navbar>来实现
+
+import Navbar from './components/Common/Navbar'
+Vue.component(Navbar.name,Navbar);
+
+<template>
+  <div class="header">
+    <h3 @click="goBack" class="back"><</h3>
+    <h3 class="desc_title">{{title}}</h3>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "Navbar",
+    props: ['title'],
+    data() {
+      return {}
+    },
+    methods: {
+      goBack() {
+        this.$router.go(-1);
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .header {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: lightcyan;
+  }
+
+  .header .back {
+    position: absolute;
+    top: 0;
+  }
+
+  .header .desc_title {
+    text-align: center;
+  }
+</style>

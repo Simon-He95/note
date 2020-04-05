@@ -1,0 +1,79 @@
+npm install axios
+
+axios的基本使用：
+Vue.prototype.$axios = axios;
+  var App = {
+    template:'<div>' +
+      '<button @click="sendAjax">发送请求</button>' +
+      '</div>',
+    methods:{
+      sendAjax(){
+        this.$axios.get('data.json')
+          .then(res=>{
+            console.log(res);
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+      }
+    }
+  };
+
+axios的并发请求：
+  var App = {
+    template:'<div>' +
+      '<button @click="sendAjax">发送请求</button>' +
+      '</div>',
+    methods:{
+      sendAjax(){
+        //请求1 get：/
+        //请求2 post：/add
+	this.$axios.defaults.baseURL ='http://127.0.0.1:8080/';	一般定义在全局的main.js中
+	var r1 = this.$axios.get('',{
+		params:{id:1}
+	});
+	var r2 = this.$axios.post('add','a=1');
+	this.$axios.all([r1,r2])
+	.then(this.$axios.spread(res1,res2)=>{
+		//请求全部成功
+		this.res1 = res1.data;
+		this.res2 = res2.data;
+	})
+	.catch(err=>{
+		//其一失败
+		console.log(err);
+	})
+      }
+    }
+  };
+
+transformResponse在传递给then/catch前，允许修改响应数据
+
+this.$axios.get('',{
+   transformResponse:[function(data){
+      //对data进行任意转换处理
+      data = Json.parse(data);
+      console.log(data);
+	//如果data.msg="nihao";下面res的结果需要用res.data.msg
+      return data;
+   }]
+}).then(res=>{
+	console.log(res.data);
+})
+
+拦截器：在请求或响应被 then 或 catch 处理前拦截它们。
+    //请求拦截	请求前弹出加载提示框
+    this.$axios.interceptors.request.use(function(config){
+  	Indicator.open('加载中...')；
+	return config;
+    },function(error){
+	return Promise.reject(error);
+    })
+    
+    //响应拦截	响应时，关闭加载提示框
+     this.$axios.interceptors.response.use(function(response){
+  	Indicator.close();
+	return response;
+     },function(error){
+	return Promise.reject(error);
+     })

@@ -1,0 +1,45 @@
+地址：http://lbsyun.baidu.com/jsdemo.htm#i8_1
+操作地址：https://segmentfault.com/a/1190000015774280
+
+1.把密钥的script引入index.js中使用
+
+<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=您的密钥"></script>
+
+2.定义一个map.vue的组件
+<template>
+  <div id="myMap"></div>
+</template>
+<script>
+  export default{
+    data(){
+      return{
+        style:{
+          width:'100%',
+          height:this.height + 'px'
+        }
+      }
+    },
+    props:{
+      height:{
+        type:Number,
+        default:300
+      },
+      longitude:{},
+      latitude:{}
+    },
+    mounted() {
+      // 百度地图API功能
+      var map = new BMap.Map("myMap");
+      var point = new BMap.Point(this.longitude,this.latitude);
+      map.centerAndZoom(point, 12);
+      var marker = new BMap.Marker(point);// 创建标注
+    }
+  }
+</script>
+
+3.挂载到mian.js中
+import myMap from './components/Common/map'
+Vue.component(myMap.name,myMap);
+
+4.使用
+<myMap :height="400":longitude="经度多少":latitude="维度多少"></myMap>

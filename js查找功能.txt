@@ -1,0 +1,57 @@
+function spiltStr(str){
+	var resultArr = [];
+		resultArr.push(str);
+	if(str.length<=0){
+		return resultArr;
+	}else if(str.length ==2){
+		resultArr.push(str.charAt(0));
+		resultArr.push(str.charAt(1));
+		return resultArr;
+		
+	}else{
+		for(var i=0;i<str.length;i++){
+			var tempStr =str.replace(str.charAt(i).toString(),"");
+			var nextResultArr = spiltStr(tempStr);
+			if(nextResultArr.length>0){
+				nextResultArr.forEach((item)=>{
+					resultArr.push(item)
+				})
+			}
+		}	
+		return resultArr;
+	}
+}
+
+function SSS(str1,str2){
+	var st1SplitResult = spiltStr(str1);
+	var st2SplitResult = spiltStr(str2);
+	var sameResult = [];
+st1SplitResult.forEach(str1_item=>{
+	st2SplitResult.forEach((str2_item=>{
+		if(str1_item === str2_item){
+      sameResult.push(str1_item);
+		}
+	}))
+})
+//处理数据
+let arr2 = [...new Set(sameResult)]
+var temp=[];
+var maxLength =0;
+for(var i=0;i<arr2.length;i++){
+ if(temp.length ==0){
+ 	temp.push(arr2[i]);
+ 	maxLength =arr2[i].length;
+ }else if(arr2[i].length == maxLength){
+   	temp.push(arr2[i]);
+   }else if(arr2[i].length >maxLength){
+   	temp = [];
+   	temp.push(arr2[i]);
+   	maxLength = arr2[i].length;
+   }
+}
+if(temp ==""){
+	temp =""
+}
+console.log(temp.length)
+return temp
+}

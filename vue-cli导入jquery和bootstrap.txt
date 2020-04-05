@@ -1,0 +1,39 @@
+因为bootstrap依赖jquery，所以在使用npm安装bootstrap前先安装jquery
+
+又因为jquery以来popper.js，所以在安装jquery之前先安装popper
+
+所以安装过程分为三步：
+
+一、使用npm安装popper
+
+二、使用npm安装jquery
+
+三、使用npm安装boostrap 
+
+一、使用npm安装popper	命令：npm install popper.js --save-dev
+1.在build目录下的webpack.base.conf.js中加入
+   const webpack = require("webpack");
+
+2.在webpack.base.conf.js中module.exports找到plugins（如没有就创建），并添加上
+   Popper:['popper.js','default'],
+
+二、使用npm安装jquery	命令：npm install jquery@2 install jquery@2.2.3 --save-dev
+1.在build目录下的webpack.base.conf.js中
+   在module.exports中找到resolve，在其alias项中添加：
+	'jquery':'jquery',
+   在module.exports中找到plugins，并添加以下代码：
+     plugins:[
+       new webpack.ProvidePlugin({
+         $:'jquery',
+         jquery:"jquery",
+         "windows.jQuey":"jquery",
+         popper:['popper.js','default']
+       })
+     ],
+
+三、安装bootstrap	命令：npm install bootstrap
+
+在main.js中加入以下代码：
+   import $ from  'jquery'
+   import 'bootstrap/dist/css/bootstrap.min.css'
+   import 'bootstrap/dist/js/bootstrap.min.js'

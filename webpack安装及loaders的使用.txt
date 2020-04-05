@@ -1,0 +1,100 @@
+npm代理设为：
+   npm config set registry http://registry.cnpmjs.org
+安装webpack：
+   npm -g install  webpack@3.12.0 -D
+
+打包bulid.js:
+   webpack ./main.js build.js		//可通过改变package.json中的scripts，来执行npm run build来运行
+     "scripts": {
+       "build": "webpack ./main.js ./bulid.js"
+     },
+
+新建main.js:	esModule的模块导入
+1.先导入vue.js			//import Vue from '../../js/vue.js'
+2.新建App.js			
+var app = {
+  template:'<div>' +
+    '我是一个入口组件' +
+    '</div>'
+};
+//声明并导出
+export  var num1 =2; //作为一整个对象的key导出
+export default app;
+
+3.把App.js导入到main.js中	//import App from './App.js'
+4.打包成build.js然后在index.html页面中引用	<script src="build.js"></script>
+
+package.json:		可配置scripts来监听不同环境
+{
+  "name": "webpack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack ./main.js ./bulid.js",
+    "dev": "webpack --config ./webpack.dev.config.js",	//webpack run dev	监听生产
+    "prod": "webpack --config ./webpack.prod.config.js"	//webpack run prod监听其它环境
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
+导入main.css样式：		
+1.需要在module下配置loaders 
+2.需要下载style-loader 和 css-loader
+指令：npm i css-loader style-loader -D
+  module:{
+    loaders:[
+      {
+      //style-loader 和 css-loader
+      //遇到后缀名为css的文件，webpack先用css-loader加载器去解析这个文件
+      //最后计算完的css，将会用style-loader生产一个内容为最终解析完的css代码的style标签
+      //webpack在打包过程中，遇到后缀为css的文件，就会用style-loader和css-loader去加载这个文件
+      test:/\.css$/,
+      loader:'style-loader!css-loader'
+    }
+    ]
+  },
+
+导入图片文件：
+1.需要在module下配置loaders 
+2.需要下载url-loader 和 file-loader
+指令：npm i url-loader file-loader -D
+      {
+        //简易，对于比较小的图片，使用base64编码，可以较少一次图片的网络请求；
+        // 那么对于比较大的图片 ，使用base64就不合适了，编码会和html混在一起，一方面可读性差，另一方面加大了html页面内的大小
+        // 反而加大了下载页面的大小，得不偿失了呢，因此设置一个合理的limit是非常有必要的
+        test:/\.(jpg|png|jpeg|gif|svg)$/,
+        loader:'url-loader?limit=40000'   		//图片大小大于限制，会生成额外图片，小于会转化为base64
+      }
+
+less、less-loader用法：		//此时需要手动把index.html页面放到dist文件夹路径下生成才可成功
+1.需要在module下配置loaders 
+2.在main.js中引用main.less		//import './main.less'
+在main.less中：	@imgPath:'./me.jpg';
+		body{
+  	   	   background-image:url(@imgPath);
+		}
+3.需要下载url-loader 和 file-loader
+指令：npm i less-loader less -D
+最外侧定义一下：var path = require('path');
+      {
+        test: /\.less$/,
+        loader: 'style-loader!css-loader!less-loader'
+      }
+相对转绝对生成一个dist文件夹：
+  output: {
+    path: path.resolve('./dist'),        //相对转绝对生成一个dist文件夹，webpack执行后，build.js会生成到该文件夹下
+    filename: './build.js'
+  },
+
+自动把index.html生成到dist文件夹下：		//需要下载插件webpack-plugin
+指令：npm i html-webpack-plugin -D
+最外侧定义一下：const HtmlWebpackPlugin = require('html-webpack-plugin');
+  plugins:[
+    //插件
+    new HtmlWebpackPlugin({
+      template:'./src/index.html'		//参照物
+    })
+  ],

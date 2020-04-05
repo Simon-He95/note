@@ -1,0 +1,14 @@
+//控制字数显示的过滤器
+Vue.filter('controlShow',function (str,num) {
+  //如果当前字符串长度小于num，返回原值,否则截取0到num-1位加上。。。
+  //使用：{{goods.title | controlShow(15)}}
+  if(str.length<=num){
+    return str;
+  }else {
+    return str.substr(0,num-1)+'...';
+  }
+})
+
+
+使用方法：
+<div class="title">{{goods.title | controlShow(15)}}</div>

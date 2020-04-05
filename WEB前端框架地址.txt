@@ -1,0 +1,71 @@
+WeUI5.28：
+https://weui.shanliwawa.top/
+
+Jqury UI：
+https://www.jqueryui.org.cn/demo/
+
+JQ22：
+http://www.jq22.com/
+
+ChinaZ：
+http://sc.chinaz.com/moban/
+
+Jquery之家：
+http://www.htmleaf.com/css3/
+
+Swiper：
+https://www.swiper.com.cn/#
+
+Jquert mmenu：
+http://mmenu.frebsite.nl/tutorials/animated-hamburger.html
+
+高亮使用bootstrap的图标：
+https://v3.bootcss.com/components/#glyphicons-how-to-use
+
+bootstrap可视化布局：
+https://www.runoob.com/try/bootstrap/layoutit/
+
+WeUI在线演示：
+https://weui.shanliwawa.top/
+
+分享功能：
+http://www.bshare.cn/
+
+icon矢量图：
+https://www.iconfont.cn/
+
+bootstrap框架官网：
+https://www.bootcss.com/
+
+Codepen：
+https://codepen.io/popular/pens/
+
+图片灰度：
+img {
+    -webkit-filter: grayscale(100%); /* Chrome, Safari, Opera */
+    filter: grayscale(100%);
+}
+
+AngularJS 中文文档：
+https://www.angularjs.net.cn/
+
+ionicframework：
+https://ionicframework.com/docs/components
+
+bootcdn：
+https://www.bootcdn.cn/
+
+ionic中文网：
+http://www.ionic.wang/
+
+ionic1中文网：
+http://www.ionic.wang/js_doc-index-id-52.html
+
+Vue的样式Element：
+https://element.eleme.cn/#/zh-CN
+
+webpack中文文档：
+https://www.html.cn/doc/webpack/
+
+github-mint-hub：
+https://github.com/ElemeFE/mint-ui/tree/master/example/pages

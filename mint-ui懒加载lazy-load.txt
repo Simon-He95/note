@@ -1,0 +1,6 @@
+main.js中引入
+import { Lazyload } from 'mint-ui';
+Vue.use(Lazyload);
+
+使用：   
+ <img v-lazy="item.img_url" alt="">

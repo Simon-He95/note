@@ -1,0 +1,7 @@
+指令：cnpm install --global vue-cli
+
+指令：vue init webpack my-vue	//除了 vue-router 是Y，其它都可以N
+
+进入生成的文件夹 cd my-vue
+指令：cnpm install
+指令：npm run dev

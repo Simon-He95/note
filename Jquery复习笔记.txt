@@ -1,0 +1,147 @@
+1.Jquery复习
+DOM的选择，遍历，查找
+
+JQ的选择，是通过集合来获取元素（操作集合）
+   Jquery的选择器
+      $("div")			元素选择器	获得一个集合
+      $("#d1")			ID选择器		获得一个元素
+      $(".d1")			类选择器		获得一个集合
+      $(".d1 > p")			组合选择器
+      $(".d1 p")			组合选择器
+
+Jquery获取的元素的对象如何使用原生的方法（函数）？
+   把Jquery的对象转换为JS对象
+      $(".d1").get(0)
+      $(".d1").[0]
+   JS的对象转换为JQ的对象
+      直接用$()包裹，注意不要给原生对象加引号
+      var d1 = document.getElementById("d1");
+      $(d1);
+
+如何获得集合中的某个元素？
+   （1）通过选择器的过滤来获取
+      $(".c1:eq(1)")		gt	lt
+      gt			greater than
+      lt			less than
+   （2）通过方法来获取
+      .first()		获取集合的第一个元素
+      .last()			获取集合的最后一个元素
+      .eq()			获取集合的某个元素，顺序从0开始，-（负号）代表从后开始数
+      .filter()		按照过滤规则来获取元素
+      filter方法可以进行集合的奇偶数选择，也可以通过index来进性复杂的元素选择，index从0开始
+	$(".c1").filter(function(index){
+	      return   index > =2 
+	})
+      add()			给集合增加一些元素，变为更大的集合
+      not()			给元素减少一些元素
+      end()			返回到上一次过滤元素操作之前的集合状态
+      each()		把集合的每一个对象单独执行类似的方法
+
+遍历：根据元素来查找其他元素（当前的元素主题变化了，操作的是其他对象）
+   next()			只能找紧跟着后一个同级元素
+   nextAll()		找后面的所有同级元素，内部可以使用过滤器
+   nextUntil()		找后面的同级元素，截至到某个指定元素（不包括指定元素）
+   prev()			只能找紧跟着的前一个同级元素
+   prevAll()		找前面的所有同级元素，内部可以使用过滤器
+   siblings()		找所有同级元素，内部可以使用过滤器
+   children()		找元素的所有儿子，内部可以使用过滤器
+   parent()		找元素的父亲，内部的过滤器用于判断
+   parents()		找元素的父亲及先祖（可以一直找到body）
+   parentsUntil()		找元素的父亲以及先祖，可以接招到先祖的某一辈（不包含该辈）
+   find()			找元素的所有后代，内部*必须使用过滤器，否则查不到
+
+   元素的判断：
+   has()			判断某个元素是否有特定的后代，返回了符合条件的元素（操作的主体还是原来的元素）
+   
+   无法进行链式操作：返回的是真和假
+   is()			判断某个元素是否符合某种特定的条件（包含某种元素，内容，类，ID，也可以用函数盘，也可以判断是否符合某种状态：动画，选中等等）	// .is(":animated")，.is(":checked")，.is(":contains('匹配文本中是否有该内容')")
+
+Jquery的DOM操作
+   .html()				获取元素的内部的HTML代码，包含标签
+   .html("<h1>H1标签</h1>")	设置元素的内容，里面的HMTL标签会生效
+   .text()				获取元素的内部文本信息，忽略了标签
+   .text("<h1>H1标签</h1>")		设置元素的内容，里面的的HTML标签会当成字符串输出
+
+   .attr()				获取或者设置元素的属性，必须提供参数
+
+   可以一次性操作多个类，空格隔开：	addClass("c1 c2 c3")
+   addClass()			给元素添加类
+   hasClass()			判断元素是否指定了某个类
+   removeClass()			给元素删除类
+
+如何新建一个DOM元素？
+   var d1 = document.createElement("p");	原生
+   $("<div>")				Jquery
+
+*（A都是新增的内容）
+   remove()			从DOM中删除一个元素（样式、内容都不在）
+   empty()			把DOM中一个元素的内容清空，但元素还存在（样式还在，内容不在）
+
+   append()			由父元素调用，在父元素的最后增加一个子元素，参数应该是待追加的元素，B中最后增加A
+   appendTo()			由待追加的元素调用，参数应该是某个元素（看成待追加元素的父亲），把A增加到B的最后
+   prepend()			由父元素调用，在父元素的最前增加一个子元素，参数应该是待追加的元素，B中最前增加A
+   prependTo()			由待追加的元素调用，参数应该是某个元素（看成待追加元素的父亲），把A增加到B的最前
+
+   用法类似于append prepend（A都是新增的内容）
+   after()				由原有元素调用，在原有元素后增加一个新元素，B后增加A
+   before()			由原有元素调用，在原有元素前增加一个新元素，B前增加A
+   insertAfter()			由新元素调用，把新元素插入到原有元素后，A插入到B后
+   insertBefore()			由新元素调用，把新元素插入到原有元素前，A插入到B前
+
+   replaceAll()			新元素调用，被替换元素（老元素）成为方法的参数，用A替换B
+   replaceWith()			老元素调用，替换元素（新元素）成为方法的参数，B中的内容用A替换
+
+   clone()				完整的复制一个元素，包括属性，类，内容......
+   toggleClass()			如果这个样式存在就删除，不存在则增加 
+   wrap()				给样式外增加一层内容.wrap("<div></div>")，外加一层div
+   unwrap()			给样式外删除一层内容.unwrap("<div></div>")，外减一层div
+
+动画的停止：			如果一个元素有动画的队列（多个动画组成）
+   stop()		==		stop(false,false)	停止当前动画（动画不会到最终状态），继续下一个动画，如果没有后续动画，则停止。
+   stop(false,true)			停止当前动画（动画马上到当前动画的最终状态），继续下一个动画，如果没有后续动画，则停止。
+   stop(true,false)			停止当前动画（动画不会到最终状态），下一个动画不会继续
+   stop(true,true)			停止当前动画（动画马上会到最终状态），下一个动画不会继续
+
+   finish()				停止所有动画，马上到最终的状态
+
+Jquery的SIZE：
+   一般定义于元素（div）
+   .height()			内容区域高度
+   .width()				内容区域宽度
+   .innerHeight()			内容区域（含padding）的高度
+   .innerWidth()			内容区域（含padding）的宽度
+   .outerHeight()			内容区域（含border）的高度，不含margin的距离
+   .outerWidth()			内容区域（含border）的宽度，不含margin的距离
+   .offset().top()			相对body的上侧距离
+   .offset().top()			相对body的左侧距离
+   .offsetParent()			找到最近的一个有做过定位的祖先（position），如没会找到body
+   .position()			相对于最近一个有做过定位祖先的距离left和top，如果都没做过定位，则找到body
+
+   一般定义于body
+   .scrollLeft()			获取匹配元素的水平滚动条位置
+   .scrollTop()			获取匹配的元素的垂直滚动条位置
+
+Jquery	Ajax	echarts
+原生Ajax：
+   $.ajax({
+	type:"post",				//或者Get
+	url:"data.json",
+	cache:false,				//会加随机字符串，防止缓存
+	data:{name:"John",location:"Boston"},		//data:传参数   
+   }).done(function(msg){
+   	alert("Data Saved: " + msg);			//msg是字符串
+   },dataType)					//dataType设置是json格式还是html格式，定义在最后“json”
+
+load：
+   $.load("data.json",function(response,status,xhr){
+	if(status == "error"){
+		var msg = "error: ";
+		alert(msg + xhr.status + " " + xhr.statusText);
+	}
+   })
+
+get/post:
+   $.post("data.json",function(data){		//或者get
+	console.log(data);			//data是字符串
+   },dataType)				//dataType设置是json格式还是html格式，定义在最后“json”
+

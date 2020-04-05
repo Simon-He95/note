@@ -1,0 +1,71 @@
+打包前优化：
+1.config下的index.js中productionSourceMap改为false，加快打包速度，减少打包体积，不生成 map 文件
+2.在build的环境下如dev.conf.js的module，可以增加一个限制图片的loaders，在小于limit时，图片会转成base64编码，减少网络请求。
+    loaders:[
+      {
+        //简易，对于比较小的图片，使用base64编码，可以较少一次图片的网络请求；
+        // 那么对于比较大的图片 ，使用base64就不合适了，编码会和html混在一起，一方面可读性差，另一方面加大了html页面内的大小
+        // 反而加大了下载页面的大小，得不偿失了呢，因此设置一个合理的limit是非常有必要的
+        test: /\.(jpg|png|jpeg|gif|svg)$/,
+        loader: 'url-loader?limit=40000'
+      }
+3.mint-ui按需引入，需要安装插件babel-plugin-component,以达到减小项目体积的目的。
+   执行：npm install babel-plugin-component -D
+   需改.babelrc文件中的plugins，
+	增加：
+   	["component", [
+  	  {
+    	  "libraryName": "mint-ui",
+     	  "style": true
+   	  }
+  	]]
+   在main.js中按需引入：
+   	//按需引入mint-ui
+	import {Toast,Loadmore,Swipe,SwipeItem,Lazyload,Header,Button,Switch,Badge,Indicator} from  'mint-ui'
+	Vue.component(Toast.name,Toast);
+	Vue.component(Header.name,Header);
+	Vue.component(Swipe.name,Swipe);
+	Vue.component(SwipeItem.name,SwipeItem);
+	Vue.component(Button.name,Button);
+	Vue.component(Badge.name,Badge);
+	Vue.component(Loadmore.name,Loadmore);
+	Vue.use(Lazyload);
+	Vue.use(Toast);
+
+4.vue 首屏加载优化（找到 build/webpack.base.conf.js 文件，在 module.exports = { } 中添加以下代码，来告诉webpack一些第三方库不需要打包，此时需要使用cdn引入的方式，不占服务器资源）
+  externals:{
+    'vue':'Vue',
+    'vue-router': 'VueRouter',
+    'moment':'Moment'
+  },
+
+5.路由懒加载：打包构建应用时，js包会变得很大，影响页面加载。我们需要把不同路由对应的组件分割成不同的代码块，然后当路由被访问时才加载对应组件，这样更高效。
+   （1）安装babel-plugin-syntax-dynamic-import:
+            npm install babel-plugin-syntax-dynamic-import
+   （2）在babelrc中的plugins配置"syntax-dynamic-import"
+   （3）然后原本router文件夹下的index.js的全部导入方式，改成按需导入（在访问页面时，才对应增加该js）
+  	 //按需加载引入模块
+	const Home =()=>import( "../components/Home/Home");
+	const Vip =()=>import( "../components/VIP/Vip");
+	const Cart =()=>import( "../components/Cart/Cart");
+	const Search =()=>import( "../components/Search/Search");
+	const NewsList =()=>import( "../components/News/NewsList");
+	const NewsDetail =()=>import( "../components/News/NewsDetail");
+	const PhotoList =()=>import( "../components/Photo/PhotoList");
+	const PhotoDetail =()=>import( "../components/Photo/PhotoDetail");
+	const GoodsList =()=>import( "../components/Goods/GoodsList");
+	const GoodsDetail =()=>import( "../components/Goods/GoodsDetail");
+	const GoodsComment =()=>import( "../components/Goods/GoodsComment");
+
+6. 开启gzip压缩
+这个优化是两方面的，前端将文件打包成.gz文件，然后通过nginx的配置，让浏览器直接解析.gz文件。
+
+7.首页单独做服务端渲染
+
+8.打包执行：
+   npm run build
+
+9.打包完成上线
+   需要安装http-server
+	安装执行：npm i -g http-server
+   在打包好的dist文件路径执行 hs -o -p 8888

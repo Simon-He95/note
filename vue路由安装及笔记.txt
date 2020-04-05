@@ -1,0 +1,94 @@
+安装：
+npm init --yes
+npm install vue-router
+
+路由实现：
+（1）传统开发方式url改变后，立刻发生请求响应整个页面，有可能资源过多，传统开发会让页面出现白屏
+（2）SPA单页面应用 Single Page Application
+  锚点值改变后
+  不会立刻发生改变，而是在某个合适的时机，发生ajax请求 页面局部渲染
+  优点：页面不立刻跳转 用户体验好
+    vue angular react
+原理就是
+<a href="#/login">登陆页面</a>
+<a href="#/register">注册页面</a>
+<div id ="app"></div>
+<script>
+  var div = document.getElementById('app');
+             window.onhashchange = function(){
+	  switch(location.hash){
+	     case:'#/login':
+		div.innerHTML="登录"	
+		break；
+	     case:'#/register':
+		div.innerHTML="注册"	
+		break；
+	   }
+	}
+</script>
+
+  Vue.use(VueRouter);
+
+  var Login ={
+    template:'<div>我是登录页面</div>'
+  }
+
+  var register ={
+    template:'<div>我是注册页面</div>'
+  }
+
+  //创建router对象
+  var router = new VueRouter({
+    //配置路由对象
+    routes:[
+      //路由匹配规则
+      {
+        path:'/login',
+        component:Login
+      },
+      {
+        path:'/register',
+        component:register
+      }
+    ]
+  });
+
+  //引入vue-router模块 带入两个全局组件 router-link==》a to===>href, router-view===>路由匹配组件的出口
+  var App = {
+
+    template:'<div>' +
+      '<router-link to="/login">登录页面</router-link> ' +
+      '<router-link to="/register">注册页面</router-link> ' +
+      '<router-view></router-view>' +
+      '</div>'
+    }
+
+  new Vue({
+    el:'#app',
+    template:'<App />',
+    components:{
+      App
+    },
+    //交给Vue实例化对象管理
+    router:router
+  });
+
+命名路由：	自定义属性 	:to="{name:'路由的名字'}"
+
+路由的参数：	
+   path:'/user/:id'		:to="{name:'user',params:{id:1}}"
+   path:'/user'		:to="{name:'user',query:{userId:1}}"
+
+嵌套路由：
+         children:[
+           {
+             path:'/home/film',
+             name:'film',
+             component:Film
+           },
+           {
+             path:'/home/song',
+             name:'song',
+             component:Song
+           }
+        ]

@@ -1,0 +1,222 @@
+v-text		会含标签等同于{{msg}}
+v-html
+v-if		删除整个dom元素
+v-show		隐藏该元素display：none
+v-on		简写 @，鼠标点击事件，v-on:input="onclick"
+v-bind		简写：,绑定标签上的属性class=“{changeColor:true}”
+
+v-for="(item,index) in Lists" :key="item.id"	循环获取对象的数据	*一定要加上:key属性，避免让vue帮我们去计算DOM产生紊乱
+        Lists:{
+  	name:"张三",
+          	age:20,
+         	fav:"足球"
+        },
+
+v-model		双向数据绑定，等同于v-bind:value ='msg' v-on:input="valueChange"
+
+methods:{
+ valueChange(e){
+	this.msg = e.target.value;
+	}
+}
+
+组件：
+1.声明组件 （声子）
+var Vheader = {
+    template:'' +
+      '<div>' +
+      '我是头部组件' +
+      '</div>'
+  };
+  var Vaside = {
+    template:'' +
+      '<div>' +
+      '我是侧边栏组件' +
+      '</div>'
+  };
+  var Vcontent = {
+    template:'' +
+      '<div>' +
+      '我是内容组件' +
+      '</div>'
+  };
+2.挂子
+  components:{
+      Vheader,
+      Vaside,
+      Vcontent
+    },
+3.用子
+    template: '<div>' +
+      '我是入口组件' +
+      '<Vheader></Vheader>' +
+      '<div> <Vaside></Vaside>' +
+      '<Vcontent></Vcontent></div>' +
+      '</div>'
+
+全局组件：	第一个参数是组件的名字
+Vue.component('Vbtn',{
+   template:'
+	<button>按钮</button>
+   '
+});
+父子组件传值：	
+
+父===》子传
+1.先给父组件中绑定自定义的属性
+2.在子组件中使用props接收父组件传递的数据
+3.可以在子组件中任意使用
+  Vue.component('Parents',{
+    data(){
+      return{
+        msg:"我是父组件的数据"
+      }
+    },
+    template:'<div>' +
+      '<p>我是父组件</p>' +
+      '<Child :childData="msg"></Child>' +
+      '</div>',
+
+  });
+  Vue.component('Child',{
+    template:'<div>我是子组件' +
+      '<div v-text="childData"></div>' +
+      '</div>',
+    props:['childData']
+  });
+
+子===》父传
+1.在父组件绑定 自定义事件
+2.在子组件中触发原生的事件，然后在函数中使用$emit触发自定义的childHandler    （监听）
+3.$emit(自定义的事件，消息)         //this.$emit('childHandler',val);
+  Vue.component('Parents',{
+    data(){
+      return{
+        msg:"我是父组件的数据"
+      }
+    },
+    template:'<div>' +
+      '<p>我是父组件</p>' +
+      '<Child :childData="msg" @childHandler ="childHandler"></Child>' +
+      '</div>',
+    methods:{
+      childHandler(val){
+        console.log(val);
+      }
+    }
+
+  });
+  Vue.component('Child',{
+    template:'<div>我是子组件' +
+      '<input type="text" v-model="newdata" @input="changeValue(newdata)"></input>' +
+      '</div>',
+    props:['childData'],
+    data(){
+    return {
+      newdata:this.childData			//因为父子组件的传递机制，会造成报错，因此在子组件使用该值时需要经过新变量（childData）重新传递
+    }
+  }，
+    methods:{
+      changeValue(val){
+        this.$emit('childHandler',val);
+      }
+    }
+  });
+
+插槽 slot		//作为承载分发内容的出口
+  Vue.component("Vbtn",{
+    template:"<button>" +
+      "<slot>按钮</slot>" +
+      "</button>"
+  });
+
+<Vbtn type="success">登录</Vbtn>	可直接在里面写内容，会替换原本slot里的内容
+  Vue.component("Vbtn",{
+    template:"<button class='default' :class='type'>" +
+      "<slot>按钮</slot>" +
+      "</button>",
+    props:['type']
+  });
+//通过type传递给按钮赋予class的样式
+slot可以通过name来选择	"Vbtn",{<slot name="one"></slot>}; 
+展示：			<Vbtn><h2 slot="one"></h2></Vbtn>	slot里的值要和slot的name对应
+
+过滤器Filter：局部过滤器和全局过滤器
+1.声明过滤器
+2.{{数据 | 过滤器的名字}}
+  //全局过滤器
+  Vue.filter('myFilters',function (value) {
+    return value.split('').reverse().join('');
+  })
+  //局部过滤器
+  Vue.component("Vcontent",{
+    template:"<div>" +
+      "<input type='text' v-model='msg'>" +
+      "<div>{{msg | myFilter}}</div>" +
+      "{{msg | myFilters}}" +
+      "</div>",
+    data(){
+      return{
+        msg:"Hello Filters"
+      }
+    },
+      filters:{
+        myFilter:function(value) {
+          return "￥" + value;
+        }
+      }
+
+  });
+
+监听watch
+//watch监听的是单个属性 基本属性 见到那监视
+//监听复杂数据类型 object、array 需要深度监视	
+    data(){
+      return{
+        msg:''，
+        array:[{name:'jack'}]
+      }
+    },
+    watch:{
+      msg:function (newV,oldV) {
+        console.log(newV,oldV)
+      },
+      array:{		
+        deep:true,	//深度监视
+        handler:function(newV,oldV){
+          console.log(newV[0].name);
+        }
+      }，
+    }
+
+计算属性computed
+var musicData =[
+{id:1,name:"曹操",author:"林俊杰",songSrc:"./...mp3"}
+]
+data(){
+   return{
+	musicData:musicData
+   }
+},
+computed:{
+  getCurrentData:function(){
+     return this.musicData[this.currentIndex].songSrc
+   }
+},
+methods:{
+  clickHandler(index){
+      this.currentIndex = index;	//通过@click=“clickHandler(index)”,点击把对应的index值传给currentIndex，来改变数组里对应的数据的歌曲，在歌曲地址栏通过:src="getCurrentData",来返回这个src
+   }
+}
+
+生命周期：
+   beforCreate		组件创建之前
+   created			组件创建之后
+   beforeMount		挂载数据到DOM之前会调用
+   mounted		挂载数据到DOM之后会调用Vue作用以后的DOM操作DOM
+   beforeUpdate		在更新DOM之前调用该钩子，应用：可以获取原始的DOM
+   updated			在更新DOM之后调用该钩子，应用：可以获取最新的DOM
+   beforeDestroy		和v-if使用，销毁后可以放如缓存中，下次使用调用缓存中的数据
+   destroyed		vue中的<keep-alive></keep-alive>能在组件切换过程中将状态保留在内存中，防止重复渲染DOM
+   activated		当使用了keep-alive之后，activated和deactivated中使用
+   deactivated		

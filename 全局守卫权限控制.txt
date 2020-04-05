@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="../../js/vue.js"></script>
+  <script src="../../js/vue-router.js"></script>
+</head>
+<body>
+<div id="app">
+  <router-link to="/home">首页</router-link>
+  <router-link to="/blog">我的博客</router-link>
+  <router-link to="/login">登录</router-link>
+  <a href="javascript:avoid(0);">退出</a>
+  <router-view></router-view>
+</div>
+</body>
+<script>
+  Vue.use(VueRouter);
+  var Login = {
+    data() {
+      return {
+        name: '',
+        pwd: ''
+      }
+    },
+    template: '<div>' +
+      '<input type="text" v-model="name">' +
+      '<input type="password" v-model="pwd">' +
+      '<input type="button" value="登录" @click="clickHandler">' +
+      '</div>',
+    methods: {
+      clickHandler() {
+        //登录
+        localStorage.setItem('user', {name: this.name, pwd: this.pwd});
+        //登录完跳转到博客页面
+        //编程式导航
+        this.$router.push({
+          name: 'blog'
+        });
+      }
+    }
+  }
+  var Home = {
+    template: '<div>' +
+      '我是首页' +
+      '</div>'
+  };
+  var Blog = {
+    template: '<div>' +
+      '我是博客' +
+      '</div>'
+  };
+  var router = new VueRouter({
+    routes: [
+      {
+        path: '/',
+        redirect: '/home'
+      },
+      {
+        path: '/home',
+        name: 'home',
+        component: Home,
+      },
+      {
+        path: '/login',
+        name: 'login',
+        component: Login,
+      },
+      {
+        path: '/blog',
+        name: 'blog',
+        component: Blog,
+        meta: {                //给未来的理由，做权限控制
+          auth: true,          //证明用户访问该组件的时候需要登录
+        }
+      },
+    ]
+  });
+
+  router.beforeEach((to, from, next) => {       	//全局守卫
+    console.log(to);
+    console.log(from);
+    if (to.meta.auth) {
+      //用户点击了博客链接，该用户需要登录
+      if (localStorage.getItem('user')) {     	//判断是否登录：如果localStorage存储不为空，表示用户登录完成，直接放行,進入到/blog页面
+        next();
+      } else {
+        next({
+          path: '/login'
+        });
+      }
+    } else {
+      next();               //如果不调用，可能会卡住页面
+    }
+  });
+
+  new Vue({
+    el: "#app",
+    router
+  });
+</script>
+</html>

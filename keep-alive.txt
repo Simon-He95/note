@@ -1,0 +1,5 @@
+为了防止页面切换，重新请求，dom被重新渲染，可以在router-view外面套一层kepp-alive，且之前的状态都被保留，点击状态和滚动的位置等等
+
+    <keep-alive>
+      <router-view :seller="seller"></router-view>
+    </keep-alive>
