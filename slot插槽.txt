@@ -1,0 +1,57 @@
+插槽的局部作用域：有些时候使用组件里面的数据是要保留子组件的数据
+  子：    <slot name="data" :value="data"></slot>	//通过:value="data"，把子组件内部的数据传递出去
+  父：  <div slot="data" slot-scope="props">{{props.value}}</div> 使用slot-scope来接收，插槽中的数据是来自子组件的数据通过{{props.value}}来显示
+如果不需要使用子组件的数据，直接使用父组件里data里的数据即可
+	<div slot="data">{{parentData}}</div>
+
+
+子组件：
+const component = {
+  props: ['value'],
+  data () {
+    return {
+      style: {
+        width: '200px',
+        height: '200px',
+        border: '1px solid #aaa'
+      },
+      data: '我是子组件内部的value'
+    }
+  },
+  template: `
+  <div :style=style>
+    <div class="header">
+      <slot name="header"></slot>
+    </div>
+    <div class="footer">
+      <slot name="footer"></slot>
+    </div>
+    <div class="innerdata">
+      <slot name="data" :value="data"></slot>	//通过:value="data"，把子组件内部的数据传递出去
+    </div>
+  </div>
+  `
+}
+
+
+父组件：
+new Vue({
+  el: '#app',
+  components: {
+    CompOne: component
+  },
+  data () {
+    return {
+      value: '123'
+    }
+  },
+  template: `
+  <div>
+    <comp-one>
+      <span slot="header">this is header</span>
+      <span slot="footer">this is footer</span>
+      <div slot="data" slot-scope="props">{{props.value}}</div> 使用slot-scope来接收，插槽中的数据是来自子组件的数据通过{{props.value}}来显示
+    </comp-one>
+  </div>
+  `
+})

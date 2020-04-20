@@ -1,0 +1,15 @@
+routes中： 
+ {
+    path: '/app/:id',
+    // props: true, // props会把这个：id传入到Todo组件中	// 通过props:["id"]在Todo组件中能接收到params的id值
+    props: (route) => ({ query: route.query }),		// localhost:8080/app/123?a=123&b=456,通过方法传入route获取到query在Todo组件中，可以（{query：route.query.b}）只获取b的数据456
+    name: 'app',
+    component: Todo,
+    meta: {
+      title: 'this is app',
+      description: 'app desc'
+    }
+  },
+
+Todo中：
+  props: ['query'],

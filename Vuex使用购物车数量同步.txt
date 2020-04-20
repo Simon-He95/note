@@ -75,7 +75,7 @@ new Vue({
         }
       },
 
-异步调用需要在actions中去提交，然后在通过mutation去修改当前的值：
+异步调用需要在actions中去处理，然后在commit到mutation中的方法去修改当前的值：
   mutations:{
     addNum(state,num){
       state.count+=num;

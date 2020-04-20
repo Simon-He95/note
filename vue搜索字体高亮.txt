@@ -1,0 +1,18 @@
+methods:{
+         // 筛选变色
+            brightenKeyword(val, keyword) {
+                const Reg = new RegExp(keyword, 'i');
+                if (val) {
+                    const res = val.replace(Reg, `<span style="color: #409EFF;">${keyword}</span>`);
+                    console.log(res);
+                    return res;
+                }
+            },
+}
+
+<div>
+    <input v-model="strTitle" placeholder="维护项" style="width: 160px;" />
+    <ul>
+      <li v-for="(val,index) in list" v-html="brightenKeyword(val.name, strTitle)" >{{val.name}}</li>
+    </ul>
+</div>

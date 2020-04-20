@@ -1,0 +1,16 @@
+ 把template模板通过render函数渲染，原理就式一层一层的去createElement(name或者标签名字,{标签上的属性},[createElement(name或者标签名字,{标签上的属性},value)]),
+如果标签下面还有标签value的部分需要用[createElement（）]的方式
+ template: `
+  <div>
+    <comp-one>
+      <span slot="header">this is header {{value}}</span>
+      <span slot="footer">this is footer</span>
+    </comp-one>
+    <input type="text" v-model="value" />
+  </div>
+  `,
+
+
+  render (createElement) {
+    return createElement('comp-one', {}, [createElement('span', { slot: 'header' }, `this is header ${this.value}`), createElement('span', { slot: 'footer' }, 'this is footer')])
+  }

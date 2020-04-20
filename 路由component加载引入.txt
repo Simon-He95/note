@@ -1,0 +1,19 @@
+对于不同的路由只加载对应的代码，等真正访问到的时候才去加载，通过异步加载
+1.需要安装babel的插件去识别import在这里的语法 
+npm i babel-plugin-syntax-dynamic-import -D
+
+2.安装完需要在.babelrc中去配置加入刚下载的插件（在plugins中添加syntax-dynamic-import）
+    "plugins": [
+        "transform-vue-jsx",
+        "syntax-dynamic-import"
+    ]
+
+在路由的component中通过方法import对应页面的地址
+
+原本：
+import Todo from '../views/todo/todo.vue'
+    component: Todo,
+
+现在：
+    component: () => import('../views/todo/todo.vue'),
+

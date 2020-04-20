@@ -1,0 +1,30 @@
+实现一个1px的border线，因为DPR会手机上会x2
+mixin.styl文件：
+import './base.styl'
+border-1px($color)
+  position: relative
+  &::after
+    display: block
+    position: absolute
+    left: 0
+    bottom: 0
+    border-top: 1px solid $color
+    content: ''
+    width: 100%
+
+通过引入这个css文件
+@import './mixin.styl'
+使用： border-1px(rgba(7,17,27,0.1))
+
+在新建一个base.styl使用@media，然后把这个styl样式import进mixin.styl
+@media(-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio:1.5)
+  .border-1px
+    $:after
+      -webkit-transform: scaleY(0.7)  // 1.5*0.7接近 1像素
+      transform: scaleY(0.7)
+
+@media(-webkit-min-device-pixel-ratio: 2),(min-device-pixel-ratio:2)
+  .border-1px
+    $::after
+      -webkit-transform: scaleY(0.5)  // 2*0.5接近 1像素
+      transform: scaleY(0.5)

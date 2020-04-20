@@ -1,0 +1,30 @@
+路由进入时：	（只有在next中才可以拿到组件的实例，通过传入一个vm） next( vm => { console.log(vm.id) })
+	最先执行全局的：beforeEach((to, from, next) => {}）
+	然后执行路由上的：beforeEnter((to, from, next) => {}）
+	然后执行组件的：beforeRouteEnter(to, from, next) {}）
+	然后执行全局的：beforeResolve((to, from, next) => {}）
+	最后执行全局的：afterEach((to, from)=> {}）
+路由离开时：
+	最先执行组件内部的：beforeRouteLeave(to, from, next) {}）
+	然后执行全局：beforeEach((to, from, next) => {}）
+	然后执行全局：beforeResolve((to, from, next) => {}）
+	最后执行全局：afterEach((to, from)=> {}）
+
+beforeRouteUpdate(to, from, next) {}），只有在同样的路由形式切换的时候才会触发，比如从app/123，切换到路由app/456时，会调用beforeRouteUpdate
+
+  if (to.fullPath === '/app') { //直接可以next到/login这个路由
+    next('/login') // next中的属性 replace就不会向history推这个路由，这样我们返回的时候不是返回这一条的记录，而是再上一条的记录
+  } else {
+    next()
+  }
+
+beforeRouteLeave可以在路由离开前弹出个提示框，确定保存修改提示
+  beforeRouteLeave (to, from, next) {
+    console.log('Todo Leave enter')
+    if (global.confirm('Are you sure ?')) {
+      next()
+    }
+  },
+
+如果在相同类似路径，显示同一个组件的情况下，路由切换是不会触发内部组件的生命周期，此时可以通过beforeRouteUpdate来获取数据的变化，举例 phone/1，phone/2
+
