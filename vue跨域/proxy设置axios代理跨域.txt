@@ -1,0 +1,7 @@
+在devServer中
+配置proxy，可以拿到不同端口的axios数据
+在axios .get请求/api下面的请求端口变成3333，
+proxy：{
+ ‘/api’:‘http：//127.0.0.1：3333’，
+‘/user’：‘http：//127.0.0.1：3333’
+}
