@@ -1,0 +1,59 @@
+配置ESLint
+1.安装
+	npm install eslint --save-dev
+2.配置文件（以下只需要配置一个，如果存在多个，只会识别一个，优先级从上往下）
+	.eslintrc.js
+	.eslintrc.yaml
+	.eslintrc.yml
+	.eslintrc.json
+	.eslintrc
+	package.json
+
+安装配置的插件：
+npm i eslint-plugin-vue -D
+npm i eslint-plugin-node -D
+npm i eslint-plugin-vue -D
+npm i eslint-config-mysticatea -D
+
+在package.json中增加“eslintConfig”，这样就不用新增一个文件去配置eslint了
+
+  "eslintConfig": {
+    "root": true,
+    "parserOptions": {
+      "ecmaVersion": 2017
+    },
+    "extends": [
+      "mysticatea",
+      "mysticatea/modules",
+      "plugin:vue/recommended"
+    ],
+    "plugins": [
+      "node"
+    ],
+    "env": {
+      "browser": false
+    },
+    "globals": {
+      "applicationCache": false,
+      "atob": false,
+      "btoa": false,
+      "console": false,
+      "document": false,
+      "location": false,
+      "window": false
+    },
+    "rules": {
+      "node/no-extraneous-import": "error",
+      "node/no-missing-import": "error",
+      "node/no-unpublished-import": "error",
+      "vue/html-indent": [
+        "error",
+        4
+      ],
+      "vue/max-attributes-per-line": "off"
+    }
+  },
+
+
+
+
