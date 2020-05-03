@@ -1,0 +1,57 @@
+计算购物车总价及件数：
+
+  <span>已经选择商品{{payment.count}}件，总价￥{{payment.total}}元</span>
+
+ computed: {
+      payment() {
+        //默认只有getter方法,所以一定要有返回值
+        let total = 0; //总钱数
+        let count = 0; //总个数
+        this.shopCart.forEach((shop) => {
+          //如果勾选中
+          if (shop.isSelected) {
+            count += shop.count;
+            total += shop.num * shop.sell_price
+          }
+        });
+        return {
+          total, count
+        }
+      }
+    },
+
+在离开购物车，弹出提示并保存用户操作信息：
+
+   beforeRouteLeave(to, from, next) {
+      //导航离开该组件对应路由时调用
+      //可以访问实例'this'
+      let res = confirm('确定要离开吗？？？');
+      if (res) {
+        //保存用户编辑数据
+        let obj = {};
+        this.shopCart.forEach((shop)=>{
+          obj[shop.id] = shop.num;
+        })
+        GoodsTool.saveGoods(obj);
+
+        next();
+      }else {
+        next(false); //取消导航
+      }
+    },
+
+如果数据不完整要添加属性，手动通知VUE完成响应式 通过$set()
+
+            //给数组添加元素传递到购物车中商品的数量
+            for (var i = 0; i < this.shopCart.length; i++) {
+              let shop = this.shopCart[i];
+              let num = goodsList[shop.id];
+
+              if (num) {  //如果购物车有数量
+                //如果数据不完整的情况下要添加属性，就需要手动通知VUE完成响应式==》双向数据绑定
+                this.$set(shop, 'num', num);
+                this.$set(shop, 'isSelected', true);
+                // shop.num = num;
+                // shop.isSelected = true
+              }
+            }

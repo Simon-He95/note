@@ -1,0 +1,235 @@
+在store.js中：
+import Vuex from 'vuex'
+import defaultState from './state/state'
+import mutations from './mutations/mutations'
+import getters from './getters/getters'
+const isDev = process.env.NODE_ENV === 'development' // isDev在开发环境下是true使用strict，正式环境关闭
+
+export default () => {
+  return new Vuex.Store({
+    strict: isDev, // strict可以限制外部通过this.$store.state.count = 3,这样来修改，使用更规范的commit提交来到mutations修改数据
+    state: defaultState,
+    mutations,
+    getters
+  })
+}
+
+---------------------------------
+
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
+
+mapState的用法：（在computed中操作）
+
+1.
+    ...mapState(['count']),
+2.
+    ...mapState({
+      counter: 'count'
+    }),
+3.如果要修改数据建议使用这种
+    ...mapState({
+      counter: (state) => state.count
+    }),
+
+原本不用mapState：
+    count () {
+      return this.$store.state.count
+    },
+
+
+mapGetters的用法：（在computed中操作）
+1.
+    ...mapGetters({
+      fullName: 'FullName'
+    })
+2.
+    ...mapGetters(['FullName'])
+
+原本不用mapGetters：
+    FullName () {
+      return this.$store.getters.FullName
+    }
+
+
+mapActions的用法：（在methods中操作）
+    ...mapActions(['updateCountAsync']),
+
+原本的提交方式：（在mounted中操作）
+   this.$store.commit()
+需要变成
+    this.updateCountAsync({
+      num: 123,
+      time: 2000
+    })
+
+
+mapMutations的用法：（在methods中操作）
+    ...mapMutations(['updateCount'])
+
+原本的提交方式：（在mounted中操作）
+   this.$store.dispatch()
+需要变成
+    let i = 1
+    setInterval(() => {
+      this.updateCount({
+        num: i++,
+        num2: 456
+      })
+    }, 1000)
+
+------------------------------------------------------
+mutations
+
+*commit之后的数据都会到mutations中
+在组件中发送数据：
+      let i = 1
+      this.$store.commit('updateCount', i++)
+在mutations中接收数据num：
+  updateCount (state, num) {
+    state.count = num
+  }
+
+如果需要传多个数据，需要把数据结合成一个对象的格式传入
+      this.$store.commit('updateCount', {
+        num: i++,
+        num2: 456
+      })
+然后在mutations中接收对象num和num2
+
+-----------------------------------------------
+
+actions
+有异步代码的时候需要用到actions，比如数据请求，同步的在mutations中处理
+
+组件中通过dispatch发出异步的请求操作给actions：
+    this.$store.dispatch('updateCountAsync', {
+      num: 123,
+      time: 2000
+    })
+
+actions中：	time是2秒，2秒后把data.num赋予num，然后提交给mutations中的updateCount方法
+  updateCountAsync (store, data) {
+    setTimeout(() => {
+      store.commit('updateCount', {
+        num: data.num,
+        num2: 2222
+      })
+    }, data.time)
+  }
+
+mutations：接收到num修改state中count的数据
+  updateCount (state, { num, num2 }) {
+    state.count = num
+    console.log(num2)
+  }
+
+-----------------------------------------------
+modules
+可以声明独立的a，b，c模块，模块下又可以有自己的state、mutations、getters、actions
+但是默认vuex会把mutations都放到全局的命名空间中去，除非在a模块下声明namespaced: true
+在没有声明namespaced的情况下，a模块中的mutations，可以直接通过    ...mapMutations(['updateCount', 'updataText'])
+（这样会导致命名可能会冲突，我在a模块中有updatetext，在b模块中同样定义了updatetext,就会出现问题，此时为了解决就需要用namespaced使用独立的命名空间）
+
+    modules: {
+      a: {
+        state: {
+          text: 1
+        },
+        mutations: {
+          updateText (state, text) {
+            state.text = text
+          }
+        }
+      }
+    }
+不使用namespaced
+methods：
+	...mapMutations(['updateCount', 'updataText'])
+mounted：
+	this.updataText('13332223')
+computed：
+    ...mapState({
+      counter: (state) => state.count,
+      Text: (state) => state.a.text
+    }),
+
+
+使用命名空间namespaced： true
+    a: {
+      namespaced: true,
+      state: {
+        text: 1
+      },
+      mutations: {
+        updateText (state, text) {
+          state.text = text
+        }
+      }
+    }
+使用namespaced
+methods：
+	...mapMutations(['updateCount', 'a/updateText']) 也可以使用这种obj的方式
+							...mapMutations({
+						  	   updateCount：'updateCount'，
+						   	   updateText：'a/updateText'
+							})
+mounted：					
+	this['a/updateText']('13332223')				this[updateText]('133332223')
+computed：
+    ...mapState({
+      counter: (state) => state.count,
+      Text: (state) => state.a.text
+    }),
+
+-------------------------------------------------
+a模块内的getters可以拿到全局模块的数据和其他模块的数据
+      a: {
+        namespaced: true,
+        state: {
+          text: 1
+        },
+        mutations: {
+          updateText (state, text) {
+            state.text = text
+          }
+        },
+        getters: {
+          textPlus (state, getters, rootState) {	//getters是全局的getters，rootState里面是全局的
+            return state.text + rootState.b.value	//这里拿到的是1+bmodule中的9
+          }
+        }
+      b: {
+        namespaced: true,
+        state: {
+          value: 9
+        }
+      }
+    }
+
+------------------------------------
+{ root: true }才可以拿到全局的属性 是从全局开始/a
+如果不写root：true 会在该module比如在b下面的actions调用a的mutations，这样commit的路径就是b/a/updateCount就会出错
+      a: {
+        namespaced: true,
+        state: {
+          text: 1
+        },
+        mutations: {
+          updateText (state, text) {
+            state.text = text
+          }
+        },
+        getters: {
+          textPlus (state, getters, rootState) {
+            return state.text + rootState.b.value
+          }
+        },
+        actions: {
+          add ({ state, commit, rootState }) { // rootState是拿到全局的
+            console.log(rootState)
+            commit('updateCount', rootState.count, { root: true })	//这里的updateCount是a的，如果想拿到别的module的话需要使用commit('a/updateCount'，{ num: 123 }, { root: true} )
+          }
+        }
+
+
+

@@ -1,0 +1,19 @@
+在index.js中通过store.registerModule生成c模块
+import Vuex from 'vuex'
+import createVuex from '../store/store'
+
+Vue.use(Vuex)
+
+const store = createVuex()
+
+store.registerModule('c', {
+  state: {
+    text: 3
+  }
+})
+
+组件中：
+
+    ...mapState({
+      text: (state) => state.c.text
+    }),
