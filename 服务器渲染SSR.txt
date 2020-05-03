@@ -28,47 +28,80 @@
 	})
 
 （2）webpack.client.conf.js：
-	const webpack = require('webpack')
 	const path = require('path')
+	const VueLoaderPlugin = require('vue-loader/lib/plugin')
+
 	function resolve (dir) {
 	  return path.join(__dirname, '..', dir)
 	}
+
 	module.exports = {
-	  entry:'./src/entry-client.js',
-	  output:{
-	    path:path.resolve(__dirname,'../dist'),
-	    publicPath:'/dist/',
-	    filename:'bundle.client.js'
+	  entry: './client/entry-client.js', // 打包时走这个文件
+	  output: {
+	    path: path.resolve(__dirname, '../dist'),
+	    publicPath: '/dist/',
+	    filename: 'bundle.client.js'
 	  },
-	  plugins:[
+	  plugins: [
+	    new VueLoaderPlugin()
 	  ],
-	  resolve:{
-	    extensions:['.js','.vue','.json'],
-	    alias:{
-	      'vue$':'vue/dist/vue.esm.js',
-	      '@':resolve('src')
+	  resolve: {
+	    extensions: ['.js', '.vue', '.json'],
+	    alias: {
+	      vue$: 'vue/dist/vue.esm.js',
+	      '@': resolve('src')
 	    }
 	  },
-	  module:{
-	    rules:[
+	  module: {
+	    rules: [
 	      {
- 	        test:/\.vue$/,
-	        loader:'vue-loader',
-	        options:{
-	          compilerOptions:{
-	            preserveWhiteSpace:false
+	        test: /\.styl/,
+	        use: [
+	          'style-loader',
+	          'css-loader',
+	          {
+	            loader: 'postcss-loader',
+	            options: {
+	              sourceMap: true
+	            }
+	          },
+	          'stylus-loader'
+	        ]
+	      },
+	      {
+	        test: /\.vue$/,
+	        loader: 'vue-loader',
+	        options: {
+	          compilerOptions: {
+	            preserveWhitespace: false
 	          }
 	        }
 	      },
 	      {
-	        test:'/\.js$/',
-	        loader:'babel-loader',
-	        include:[resolve('src'),resolve('test'),resolve('node_modules/webpack-dev-server/client')]
+	        test: /\.jsx$/,
+	        loader: 'babel-loader'
+	      },
+	      {
+	        test: /\.js$/,
+	        loader: 'babel-loader',
+	        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+	      },
+	      {
+	        test: /\.(gift|jpg|jpeg|png|svg)$/,
+	        use: [
+	          {
+	            loader: 'url-loader',
+	            options: {
+	              limit: 1024,
+	              name: 'resources/[path][name]-[hash:8].[ext]'
+	            }
+	          }
+	        ]
 	      }
 	    ]
 	  }
 	}
-
+	
 4.对应在src下新建entry-server.js和entry-client.js
 （1）entry-server.js：
 

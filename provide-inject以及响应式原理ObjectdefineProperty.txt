@@ -1,0 +1,98 @@
+provide-inject是为了解决上下级数据的通信，既可以用在父子组件也可以解决爷孙之间
+因为this.$parent只能拿到父组件，如果想要拿到父组件的父组件就需要利用provide和inject
+在爷组件中使用provide方法return需要传递实例或者数据，然后孙组件通过inject['data1','data2'],可以通过this.data1/this,data2来得到数据
+
+注意：provide默认是不提供vue的reactive响应式属性的，需要自己给提供的属性提供get方法，在provide方法中定义一个空对象，通过Object.defineProperty()，在return中返回这个data对象，然后孙组件使用这个data.value即可
+
+  provide () {
+    const data = {}
+    Object.defineProperty(data, 'value', {
+      get: () => this.value,
+      enumerable: true // 可被读取
+    })
+    return {
+      grandparent: this,
+      value: data
+    }
+  }
+
+爷组件：
+new Vue({
+  el: '#app',
+  components: {
+    CompOne: component
+  },
+  provide () {
+    const data = {}
+    Object.defineProperty(data, 'value', {
+      get: () => this.value,
+      enumerable: true // 可被读取
+    })
+    return {
+      grandparent: this,
+      data
+    }
+  },
+  data () {
+    return {
+      value: '123'
+    }
+  },
+  template: `
+  <div>
+    <comp-one>
+      <span slot="header">this is header {{value}}</span>
+      <span slot="footer">this is footer</span>
+      <div slot="data" slot-scope="props">{{props.value}}</div>
+    </comp-one>
+    <input type="text" v-model="value" />
+  </div>
+  `
+})
+
+父组件：
+const component = {
+  name: 'Comp',
+  components: {
+    componentChild
+  },
+  props: ['value'],
+  data () {
+    return {
+      style: {
+        width: '200px',
+        height: '200px',
+        border: '1px solid #aaa'
+      },
+      data: '我是子组件内部的value'
+    }
+  },
+  template: `
+  <div :style=style>
+    <div class="header">
+      <slot name="header"></slot>
+    </div>
+    <div class="footer">
+      <slot name="footer"></slot>
+    </div>
+    <div class="innerdata">
+      <slot name="data" :value="data"></slot>
+    </div>
+    <componentChild></componentChild>
+  </div>
+  `
+}
+
+孙组件：
+const componentChild = {
+  inject: ['grandparent', 'data'],
+  mounted () {
+    // console.log(this.$parent.$options.name)
+    console.log(this.grandparent, this.data.value)
+  },
+  template: `
+  <div>
+    componentChild: {{data.value}}
+  </div>
+  `
+}
