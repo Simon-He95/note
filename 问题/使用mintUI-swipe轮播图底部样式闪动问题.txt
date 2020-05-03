@@ -1,0 +1,13 @@
+在swipe组件加上这个class：transform: translateZ(0);
+
+        <mt-swipe :auto="4000" class="swipe">
+            <mt-swipe-item v-for="item in items" :key="item.href">
+                <router-link :to="{name: item.href}" class="link">
+                    <img class="img" :src="item.src" alt="">
+                </router-link>
+            </mt-swipe-item>
+        </mt-swipe>
+
+        .swipe{
+            transform: translateZ(0);
+        }
