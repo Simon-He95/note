@@ -1,0 +1,62 @@
+安装插件
+npm i postcss-loader autoprefixer -D
+
+新建postcss.config.js
+
+const autoprefixer = require('autoprefixer');
+
+module.exports = {
+    plugins: [
+        autoprefixer()
+    ]
+}
+
+在webpack.config.js中配置，在css-loader之前使用之前的sourceMap处理更快
+
+		rules:[
+			{
+				test: /\.vue$/,
+				loader: 'vue-loader'
+			},
+			{
+				test: /\.scss$/,
+				use: [
+					{
+						loader:'vue-style-loader',
+					},
+					{
+						loader:'css-loader'
+					},
+					{
+						loader:'postcss-loader',
+						options: {
+							sourceMap: true
+						}
+					},
+					{
+						loader: 'px2rem-loader',
+						// options here
+						options: {
+							remUni: 75,
+							remPrecision: 8
+						}
+					},
+					{
+						loader:'sass-loader'
+					}
+				]
+			},
+			{
+				test:/\.(jpg|jpeg|gif|png|svg)$/,
+				use:[
+					{
+						loader:'url-loader',
+						options:{
+							limit:1024,
+							name:'[name].[ext]'
+						}
+					}
+				]
+			}
+		]
+

@@ -1,0 +1,21 @@
+安装插件
+npm i babel-loader babel-core -D
+npm i babel-preset-env babel-plugin-transform-vue-jsx -D
+npm i babel-helper-vue-jsx-merge-props babel-plugin-syntax-jsx -D
+
+新建.babelrc
+{
+  "presets": [
+    "env"
+  ],
+  "plugins": [
+    "transform-vue-jsx"
+  ]
+}
+
+然后在config.js中配置
+
+{
+  test: /\.jsx$/,
+  loader: 'babel-loader'
+}

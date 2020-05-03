@@ -1,0 +1,23 @@
+webpack-dev-server中插件：
+	// 自动创建一个html模板
+	const HtmlWebpackPlugin = require('html-webpack-plugin'); 
+	 // 给dev生成的dist目录，定时的清除，因为每次使用webpack构建会生成一个隐藏的目录看不到其实会存在
+	const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
+    // 主入口，可以传入多个，比如viewport.js使用hotcss做适配
+    entry:{
+        app:'./app/js/main.js'，
+        //viewport:'./viewport.js'
+    },
+
+    devServer: {
+        // 用来指定服务器资源的根目录，用来获取静态资源用的。一般指打包完 index.html 那个文件夹。publicPath+具体文件名应该就能访问到 assests 下的资源了
+        contentBase: path.join(__dirname, "dist"), 
+        compress: true, // 开启gzip亚索
+        port: 9000
+    },
+
+    output:{
+        filename:'[name].min.js',
+        path:path.resolve(__dirname,'dist') // 目标输出目录 path 的绝对路径
+    }
