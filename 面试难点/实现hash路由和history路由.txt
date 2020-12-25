@@ -1,0 +1,2 @@
+1.onhashchange =>路由会带#
+2.history.pushState h5 api => 会存在page 404，需要配合后端处理

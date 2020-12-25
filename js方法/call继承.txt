@@ -1,0 +1,25 @@
+call继承
+    改变调用方法的this，在B方法中创建一个私有的x属性，继承了方法的私有属性
+
+缺点：
+    继承不到原型上的方法
+
+function A(x) {
+    this.x = x
+}
+
+A.prototype.getX = function() {
+    console.log(this.x)
+}
+
+function B(y) {
+    A.call(this, 6)
+    this.y = y
+}
+
+B.prototype.constructor = B
+
+B.prototype.getY = function() {
+    console.log(this.y)
+}
+let a = new B(11)

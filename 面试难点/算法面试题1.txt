@@ -1,0 +1,23 @@
+// 数组扁平化 => [xxx,xxx,xx]
+let arr = [
+        [1, 2, 2],
+        [3, 4, 5, 5],
+        [6, 7, 8, 9, [11, 12, [12, 13, [14]]]], 10
+    ]
+方法1：
+    // 使用es6提供的flat 配合infinity,可传数字代表扁平化几层
+arr = arr.flat(Infinity)
+
+方法2：
+   // 使用toString转成字符串再split成数字，但是里面的数字变成了字符串的形式，需要再转成Number类型
+arr = arr.toString().split(',').map(item => Number(item))
+
+方法3：
+   // 使用JSON.stringify转成json的字符串，再用正则去除[ ]，然后转成数组，把数组中的字符串转成Number类型
+arr = JSON.stringify(arr).replace(/(\[|\])/g, '').split(',').map(item => Number(item))
+
+方法4：
+   // 循环验证是否为数组
+while (arr.some(item => Array.isArray(item))) {
+    arr = [].concat(...arr)
+}

@@ -1,0 +1,6 @@
+理解：当用户指定了watch中deep属性为true时，如果当前监控的值是数组类型。会对对象中的每一项进行求值，此时会将当前watcher存入到对应属性的依赖中，这样数组中对象发生变化时也会通知数据更新。
+
+watcher:用来监听值或者一个方法，然后在initwatch初始化时，调用new watcher(vm,expOrFn,cb,options)来创建一个watcher，数据会传入到expOrFn，定义的函数会传入到cb中，options.user = true，代表用户自己定义的watcher。
+在watcher方法中判断传入的expOrFn，如果是字符串会包装中函数 => msg   function(){return vm.msg},如果是函数直接返回，实际是在做取值，如果lazy是false会调用this.get()方法，
+pushTarget(this)，将watcher放到全局上，并用getter()来进行依赖收集，如果msg值发生改变，lazy=false，触发getter(),watcher发生更新,否则lazy=true。
+但是如果msg是个对象，其内部的属性不会更新，因为只对最外层的进行依赖收集，如果需要对内部进行依赖收集，需要deep:true，会调用traverse()，在数组中进行遍历或者递归取值，进行存到内部的watcher，完成深层监视。

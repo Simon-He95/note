@@ -1,0 +1,93 @@
+对象拷贝：
+ => 深度拷贝 (拷贝对象的所有属性作为一个全新的对象。拷贝前后的对象互不影响)
+1.JSON.stringify和JSON.parse
+	var obj = {
+   	 x: 1,
+   	 y: {
+  	      a: 1,
+ 	       b: 0,
+	       c: [1, 2, 3]
+	    }
+	};
+	var obj2 = JSON.parse(JSON.stringify(obj));
+
+2.jQuery extend方法
+	var obj = {
+   	 x: 1,
+   	 y: {
+    	    a: 1,
+    	    b: 0,
+    	    c: [1, 2, 3]
+  	  }
+	};
+	var obj2 = $.extend({}, obj);
+
+3.for循环遍历
+	var obj = {
+  	  x: 1,
+ 	   y: {
+      	  a: 1,
+    	    b: 0,
+   	     c: [1, 2, 3]
+  	  }
+	};
+	function getDataType(o) {
+ 	   return Object.prototype.toString.call(o).slice(8,-1) // [object object] 从第八位开始截取拿到数据的类型
+	}
+	function deepCopy(obj) {
+   	 var result, oType = getDataType(obj) // 判断数据类型
+  	  // copy的对象，类型要一致
+   	 if(oType === 'Object'){
+   	     result = {}
+   	 }else if(oType === 'Array') {
+   	     result = []
+   	 }else {
+   	     return obj
+   	 }
+  	  for(let i in obj) {
+      	 var content = obj[i];
+      	  if(getDataType(content) === 'Object') {
+       	     result[i] = deepCopy(content)
+       	 }else if(getDataType(content) === 'Array'){
+       	     result[i] = deepCopy(content)
+       	 }else {
+      	      result[i] = content;
+     	   }
+   	 }
+ 	   return result
+	}
+	var obj2 = deepCopy(obj);
+
+ => 浅拷贝（只拷贝对象的基础属性值，对属性值为对象或数组的属性则拷贝指针：前一个数变了会影响后一个）
+1.Object.create （拷贝到原型，在obj2.__proto__拿到拷贝对象）
+	var obj = {
+   	 x: 1,
+   	 y: {
+    	    a: 1,
+    	    b: 0,
+   	     c: [1, 2, 3]
+ 	   }
+	};
+	var obj2 = Object.create(obj);
+
+2.for直接赋值
+	var obj = {
+   	 x: 1,
+  	  y: {
+   	     a: 1,
+   	     b: 0,
+   	     c: [1, 2, 3]
+ 	   }
+	};
+	var obj2 = {}
+	for(let i in obj){
+	    obj2[i] = obj[i]
+	}
+
+3.Object.assign() 相当于合并去重的功能，第一个参数是原对象，操作完改变第一个原对象，并不创造新对象
+	const obj1 = {a: 1,b:3};
+	const obj2 = {c: 2};
+	Object.assign({}, obj1, obj2)
+4.[...obj]
+	var arr1 = [{"name":"weifeng"},{"name":"boy"}];//原数组
+	var arr2 = [...arr1]

@@ -1,0 +1,79 @@
+核心点：Object.defineProperty
+vue在初始化数据时，会给data中的属性使用Object.defineProperty重新定义所有属性，当页面取到对应属性时。会进行依赖收集（watcher），如果属性发生变化会通知相关依赖进行更新操作。
+原理：
+initData			初始化用户传入的data数据 
+new Observer		将数据进行观测
+this.walk(value)		进行对象的处理
+defineReactive		循环对象属性定义响应式变化
+Object.defineProperty	使用Object.defineProperty
+
+在vue初始化时候，会调用initData方法，拿到当前用户传入的data数据，new Observer创建一个观测类，对数据进行观测，如果数据是对象非数组的话，会调用一个this.walk方法，内部会对数据进行遍历，然后用defineReactive重新定义，里面采用的是Object.defineProperty
+
+初始化调用initData
+function initData (vm: Component) {
+  let data = vm.$options.data	// 拿到用户传入的数据
+
+  其中有observer(data, true)	// 观测数据
+}
+function observer (value: any, asRootData: ?boolean): Observer | void {
+  if (!isObject(value) || value instanceof vnode) { // 传入的data，如果不是对象不进行观测
+    return
+  }
+}
+  如果是对象判断是否被观测过，如果没被观测，重新new Observer(value)
+  观测时还要区分数据是数组或是对象
+1.如果是对象，调用this.walk(value), walk中会把当前传入的数据进行循环，因为需要重新定义这个对象的所有属性，通过
+  walk (obj: Object) {
+    const keys = Object.keys(obj) // 对象转数组
+    for (let i =0; i < keys.length; i++) {
+      defineReactive(obj, keys[i]) // defineReactive是vue的核心方法，定义响应式
+    }
+  }
+
+在defineReactive方法中会使用Object.defineProperty(obj, key, {
+  enumerable: true,
+  configurable: true,
+  get: function reactiveGetter () { // 获取数据时，调用get方法
+    const value = getter ? getter.call(obj) : val
+    if (Dep.target) {
+      Dep.depend() // 收集依赖 watcher
+    }
+    return value
+  },
+  set: function reactiveSetter () { // 数据更新
+    if (newVal === value || (newVal !== newVal && value !== value)) { // 如果数据未发生改变，直接返回
+       return
+    }
+    如果数据不同调用dep.notify()方法 // 触发数据对应的依赖进行更新
+
+  }
+})
+
+2.如果是数组
+  使用函数劫持的方式，重写了数组的方法
+  vue将data中的数组，进行了原型链重写。指向了自己定义的数组原型方法，这样当调用数组api时，可以通知依赖更新。如果数组中包含着引用类型。会对数组中的引用类型再次进行监控。
+在Observer方法中
+if (Array.isArray(value)) { // 判断是数组
+  if (hasProto) { // 判断支不支持原型链
+    protoAugment(value, arrayMethods) // 支持，则改写数组的原型方法，使原型链指向arrayMethods
+  }
+}
+
+function protoAugment(target, src: Object) { // 让目标的原型链指向src
+  target.__proto__ = src
+}
+
+const arrayProto = Array.prototype
+const arrayMethods = Object.create(arrayProto) // 改写的数组方法
+const methodsToPatch = [ // 拦截7个方法可改变数组
+ 'push',
+ 'pop',
+ 'shift',
+ 'unshift',
+ 'splice',
+ 'sort',
+ 'reverse',
+]
+内部通过函数劫持的方式，当用户调用这些方法时，还会调用原数组的方法进行更新数组，
+调用时会手动通知视图更新，通过ob.dep.notify()，对数组的每一项进行观测
+调用的方法可能新增的数据是对象类型，需要再此观测遍历，依次下去

@@ -1,0 +1,67 @@
+*webpack-bundle-analyzer： webpack提供的一个分析器，能够分析出哪一块的代码体积较大
+  const BundleAnalyZerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+  在plugins: [new BundleAnalyZerPlugin()]
+
+webpack早期压缩js文件是通过uglyifyJS后来uglyify对es6的压缩性能不太好，就推出了uglyify-es，后来es没有人维护了，
+webpack在es的分支上继续去维护，就出现了webpack内置的terser-webpack-plugin来压缩js的代码，
+webpack重视压缩这块，单独开了一个字段optimization来配置压缩的插件
+
+const TerserPlugin = require('terser-webpack-plugin')
+optimization:{
+   minimizer: [ new TerserPlugin({
+	cache: true， // 开启缓存，加快构建速度，防止一定时间内重复压缩
+	parallel : true, // 开启多线程
+	terserOptions: {
+	   compress: {
+	      unused: true,
+	      drop_debugger: true,
+	      drop_console: true,
+	      dead_code: true
+	   }
+	}
+   }) ]
+}
+
+常用的webpack配置热插件(HMR)
+  const webpack = require('webpack')
+  devServer:{
+     hot: true,
+  },
+  plugins: [ new webpack.HotModuleReplacementPlugin()]
+
+HtmlWebPackPlugin渲染html模板，会将entry入口的js文件压缩打包成 script标签插入html中
+
+resolve: {
+   extensions: [ '.js', '.vue'] // src/main自动匹配路径下的文件后缀为js和vue
+}
+
+module中排出jquery的解析，因为它不会包含require、import、define这些模块化的语句,可以省去查找jquery中需要匹配的loader的文件，可能解析jquery会存在异常解析错误
+module: {
+   noParse: /node_modules\/jquery\.js/,
+   rules: []
+}
+
+性能优化，webpack依赖于node.js是单线程依次执行，我们可以利用一些插件，让webpack支持多线程打包，简单的项目不推荐，因为多线程会占用更多的CPU资源
+例如： HappyPack、thread-loader
+
+HappyPack是一种多进程模型, npm i happypack
+const HappyPack = require('happypack')
+// 根据cpu的数量去创建线程池，利用多进程的方式去创建多线程
+const happyThreadPool = HappyPack.ThreadPool({size: OscillatorNode.cpus().length})
+plugins: [new HappyPack({
+	id: 'js',
+	threads: happyThreadPool,
+	loaders: ['babel-loader'], // 这里配置的loader首先需要支持happyPack，否则没有用
+})]
+
+thread-loader必须使用在rules的最前面， npm i thread-loader
+// 比如让js文件开启多线程打包
+rules: [
+{
+   test: /\.js$/,
+   use: ['thread-loader'],
+}]
+
+还可以从预编译处理和sourceMap来着手解决性能问题
+
+three-shaking => webpack的特性，一些没有调用的方法或者无用的代码，不会被打包进来

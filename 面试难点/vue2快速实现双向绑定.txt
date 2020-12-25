@@ -1,0 +1,34 @@
+<body>
+    <span id="text"></span>
+    <input type="text" id="input">
+    <script>
+        var span = document.getElementById('text')
+        var input = document.getElementById('input')
+        var obj = {
+            name: ''
+        }
+        let newObj = JSON.parse(JSON.stringify(obj))
+        Object.defineProperty(obj, 'name', {
+            get() {
+                return newObj.name
+            },
+            set(val) {
+                if (val !== newObj.name) {
+                    newObj.name = val
+                    Observer()
+                }
+            }
+        })
+
+        function Observer() {
+            span.innerHTML = obj.name
+            input.value = obj.name
+        }
+        setTimeout(() => {
+            obj.name = 'hj'
+        }, 2000)
+        input.oninput = function() {
+            obj.name = this.value
+        }
+    </script>
+</body>

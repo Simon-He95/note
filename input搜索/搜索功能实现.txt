@@ -1,0 +1,52 @@
+合理搜索触发请求，需要设置延时，避免每次输一个字母都触发请求，避免资源的浪费
+
+通过lodash来解决
+1.安装
+  npm i lodash
+2.在模板中引入lodash
+    import _ from  'lodash'
+
+          <el-input
+            v-model="search"
+            placeholder="搜素商家和地点"
+            @focus="isFocus = true"
+            @blur="inputBlur"
+            @input="inputAskData"
+          ></el-input>
+
+methods中：
+        inputAskData: _.debounce(async function() { // 通过lodash中的debounce方法老设置延时请求接口
+          let that = this
+          let city = this.$store.state.geo.position.city.replace('市', '') // 去除城市最后的市
+          this.searchList = []
+          let {status, data:{top}} = await this.$axios.get('/search/top', {
+            params: {
+              input: that.search,
+              city
+            }
+          })
+          this.searchList = top.slice(0,10)
+        },300) // 延时0.3s去请求一次资源
+
+限制输入的内容不能是中文或者特殊字符
+  <el-input v-model="username" name="username" type="text">
+function filterInput(val) {
+    // 这里过滤的是除了英文字母和数字的其他字符
+    return val.replace(/[^A-z0-9]/, '')
+  }
+  export default {
+    data(){
+        return{
+	username: ''
+        }
+    }
+    watch: {
+      username(val) {
+        this.$nextTick(() => {
+          this.username = filterInput(val)
+        })
+      }
+    }
+  }
+
+

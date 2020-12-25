@@ -1,0 +1,16 @@
+// 解决1s内重复点击只执行第一次
+        let btn = document.getElementById('btn')
+        function jieliu(fn) {
+            let can = true
+            return function() {
+                if(!can) return
+                can = false
+                setTimeout(() => {
+                    fn.apply(this, arguments)
+                    can = true
+                },1000)
+            }
+        }
+        btn.onclick = jieliu(() => {
+            console.log('成功节流')
+        })

@@ -1,0 +1,78 @@
+// 数组排序 
+
+// 1.冒泡排序
+
+// let arr = [3, 2, 1, 6, 4, 8, 7, 5]
+// var temp
+// for (let i = 0; i < arr.length; i++) {
+//     for (let j = 0; j < arr.length - 1; j++) {
+//         if (arr[i] < arr[j]) {
+//             temp = arr[j]
+//             arr[j] = arr[i]
+//             arr[i] = temp
+//         }
+//     }
+// }
+// console.log(arr)
+
+// 2.选择排序
+
+// let arr = [3, 2, 1, 6, 4, 8, 7, 5]
+
+// function selectSort(arr) {
+//     let length = arr.length;
+//     if (length <= 1) { return arr; }
+
+//     let minIndex, temp;
+//     for (let i = 0; i < length; i++) {
+//         minIndex = i;
+//         for (let j = i + 1; j < length; j++) {
+//             if (arr[j] < arr[minIndex]) { minIndex = j; }
+//         }
+//         temp = arr[i];
+//         arr[i] = arr[minIndex];
+//         arr[minIndex] = temp;
+//     }
+//     return arr;
+// }
+// console.log(selectSort(arr))
+
+// 3.插入排序
+
+// let arr = [3, 2, 1, 6, 4, 8, 7, 5]
+
+// function insertSort(arr) {
+//     let length = arr.length;
+//     for (let i = 1; i < length; i++) {
+//         let key = arr[i],
+//             j = i - 1;
+//         while (arr[j] > key) { // 拿数组中第一项和后面比，如果大了，把后面的插入前面
+//             arr[j + 1] = arr[j];
+//             j--;
+//         }
+//         arr[j + 1] = key;
+//     }
+//     return arr;
+// }
+// console.log(insertSort(arr))
+
+// 4.快速排序
+//拿出中间数，然后小于中间数的值放left数组，大于放right数组
+// let arr = [3, 2, 1, 6, 4, 8, 7, 5]
+
+// function quick(arr) {
+//     if (arr.length <= 1) return arr
+//     let minIndex = Math.floor(arr.length / 2)
+//     let midValue = arr.splice(minIndex, 1)
+//     let left = []
+//     let right = []
+//     for (let i = 0; i < arr.length; i++) {
+//         if (arr[i] < midValue) {
+//             left.push(arr[i])
+//         } else {
+//             right.push(arr[i])
+//         }
+//     }
+//     return quick(left).concat(midValue, quick(right))
+// }
+// console.log(quick(arr))

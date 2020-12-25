@@ -1,0 +1,30 @@
+Vue.mixin用法，给组件每个生命周期，函数等都混入一些公共逻辑
+
+原理：
+  Vue.mixin = function (mixin: Object) {
+      this.options = mergeOptions (this.options, mixin);
+      return this
+   }
+核心就是mergeOptions（）
+
+function mergeOptions(parent：Object，child：Object，vm?：Component)：Object {
+
+   可以全局使用，也可组件中使用
+ 
+   1.如果组件中有mixins
+    if（child.mixins）{ // 递归合并mixin
+      for（let i = 0, l = child.mixins.length; i < l; i++）{
+         parent = mergeOptions(parent, child.mixins[i], vm)
+      }
+   2.如果有使用到extends，也会对extends递归合并
+    if（child.extends）{   parent = mergeOptions(parent, child.mixins[i], vm) }
+   }
+}
+
+merge的原理是判断当前孩子有没有，父亲有没有，如果有使用concat()合并，如果没有判断是否是数组，如果是直接返回，否则包装成数组，这样合并会把每一个生命周期都做成数组合并
+使用：
+   Vue.mixin({
+      beforeCreate（）{ // 会给每一个组件都增加beforeCreate，进行合并
+
+      }
+   })

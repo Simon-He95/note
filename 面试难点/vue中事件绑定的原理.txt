@@ -1,0 +1,21 @@
+vue的事件绑定分为两种一种是原生的事件绑定，还有一种是组件的事件绑定
+
+理解：
+1. 原生dom事件的绑定，采用的是addEventListener实现
+2. 组件绑定事件采用的是$on
+<div @click='say'></div>
+<component @click.native='fn' @click='fn1'>
+1.dom元素中
+   vue绑定事件是在div元素，取出div的on方法，通过updateListeners()传入add$1，通过addEventListener()绑定给元素
+2.在组件中
+   on方法：vue通过updateComponentListeners()，传入add，通过内部的发布订阅模式$on方法，使用vue组件的自定义方法 //相当于$on('click', () => {}), 可以通过$emit来触发事件
+   native：是通过原生的addEventListener()方法，相当于dom元素的on
+
+如果需要给循环中的元素绑定click事件一定不要通过以下这种方式
+	<div v-for="i in 100"> // 在循环内部使用@click，相当于给循环中的每一项添加一个事件监听，性能很差
+		<div @click='click'></div>
+	</div>
+可以通过在循环外部套一个div，通过点击父元素，冒泡事件代理的方式
+	<div @click='click'>
+		<div v-for="i in 100"></div>
+	</div>

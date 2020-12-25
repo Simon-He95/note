@@ -1,0 +1,22 @@
+高德开放平台：https://lbs.amap.com/
+
+1.产品介绍进入地图
+2.然后点击最下方的javascript API
+3.去注册账号并申请key	https://lbs.amap.com/api/javascript-api/guide/abc/prepare
+4.到控制台——应用管理——我的应用——创建新应用	https://console.amap.com/dev/key/app
+  创建完成后点击添加创建key：
+	Key名称			          Key值
+      simon_gdmap_key	     63d4e2fd371ef36582eb6a61ba558c94
+5.找地图控件（在覆盖物下面）	https://lbs.amap.com/api/jsapi-v2/guide/overlays/toolbar
+https://lbs.amap.com/api/jsapi-v2/example/mapbar/mapcontrol-control-add-remove
+
+6.使用
+vue中需要使用异步加载JS API
+  window.onLoad  = function(){
+        var map = new AMap.Map('container');
+  }
+  var url = 'https://webapi.amap.com/maps?v=1.4.15&key=您申请的key值&callback=onLoad';
+  var jsapi = doc.createElement('script');
+  jsapi.charset = 'utf-8';
+  jsapi.src = url;
+  document.head.appendChild(jsapi);

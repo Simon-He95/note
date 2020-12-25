@@ -1,0 +1,30 @@
+<body>
+    <span id="text"></span>
+    <input type="text" id="input">
+    <script>
+        var span = document.getElementById('text')
+        var input = document.getElementById('input')
+        var obj = {
+            name: ''
+        }
+        obj = new Proxy(obj, {
+            get(target, prop) {
+                return target[prop]
+            },
+            set(target, prop, value) {
+                if (target[prop] !== value) {
+                    target[prop] = value
+                    Observer()
+                }
+            }
+        })
+
+        function Observer() {
+            span.innerHTML = obj.name
+            input.value = obj.name
+        }
+        input.oninput = function() {
+            obj.name = this.value
+        }
+    </script>
+</body>

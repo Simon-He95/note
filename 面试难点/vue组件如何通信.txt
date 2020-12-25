@@ -1,0 +1,8 @@
+单向数据流
+
+1.父子间通信 父->子通过props、父$on、$emit(发布订阅)
+2.获取父子组件实例的方式$parent、$children
+3.在父组件中提供数据子组件进行消费Provide、inject 插件
+4.Re f获取实例的方式调用组件的属性或者方法
+5.Event Bus 实现跨组件通信-> Vue.prototype.$bus = new Vue
+6.Vuex 状态管理实现通信

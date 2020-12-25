@@ -1,0 +1,30 @@
+在路由中使用cookie：
+    let list = {
+        name: 'zhangsan'
+    }
+    ctx.cookies.set('userInfo', list.name, {  // userInfo => key, list.name => value
+        maxAge: 60 * 1000 // 多少毫秒后过期，
+        httpOnly: true // true 表示这个cookie只有服务端可以访问，false表示客户端（js），服务端都可以访问
+    })
+
+在别的路由获取cookie
+   router.get('/news', async ctx => {
+       console.log(ctx.cookies.get('userInfo')); // 获取cookie
+       ctx.body = '新闻'
+   })
+
+koa默认是不支持中文的cookie => name: '张三'，编译会出错，需要通过Buffer转换成base64字符串，再还原成中文
+存cookie：
+    const list = {
+        name: '张三'
+    }
+    //将中文cookie转base64
+    const name = new Buffer(list.name).toString('base64') =>5byg5LiJ
+    ctx.cookies.set('userInfo', name, {
+        maxAge: 60 * 1000 // 多少毫秒后过期
+    })
+
+取cookie：
+    const data = ctx.cookies.get('userInfo') =>5byg5LiJ
+    const userInfo = new Buffer(data, 'base64').toString()
+    console.log(userInfo); => 张三

@@ -1,0 +1,28 @@
+创建一个编译器createCompilerCreator（function baseCompile(){
+  // baseCompile 就是将模板转化成render函数
+1.将模板转化成ast数——类似虚拟dom，用一个对象来描述dom元素；ast是将一个对象描述成真实的js语法
+	const ast = parse(template.trim(), options)
+  传入一个模板parseHtml(`<div id="container"><p>hello<span>zf<.span></p></div>`)
+  返回的是一个对象：{
+		  tag: 'div'
+		  children: [{
+		    tag: 'p',
+		    children: [Array],
+		    attrs: [],
+		    parent: [Circular]
+		  }],
+		  attrs: [{ name: 'id', value: 'container' }],
+		  parent: null
+		}
+  创建ast：通过正则匹配标签、属性根据<>尖角号来截取字符串，如果内部还有标签再传入到函数再此截取，截止到没有标签只有文本，对应传递到方法中去
+2.优化树——标记静态节点
+	if (options.optimize !== false) {
+	  optimize(ast, options)
+	}
+3.将ast树再生成回js代码 
+  遍历对象生成字符串，根据语法树生成新的代码 => let render = `width(this){return ${code}}`,包装成函数renderFn = new Function(render) // 模板引擎的实现
+  // new Function(`with(this){return${code}}`) with可以解决作用域，不需要使用vm.xxx,都是在vm上取值
+  例如 	with(obj) {
+	  console.log(a)   等同于obj.a
+	}
+}）

@@ -1,0 +1,32 @@
+session是存放在服务器端，会有本地文件存储，除非cookie过期，才会消失，否则会一直存在
+1.安装 koa-session:
+   npm i koa-session --save
+
+2.引入koa-session：
+   const session = reqiore('koa-session')
+
+3.配置中间件
+   //配置session中间件
+   app.keys = ['some secret hurr'] // cookie的签名
+
+   const CONFIG = {
+       key: 'koa:sess', // 默认
+       maxAge: 86400000, // cookie过期时间 毫秒
+       overwrite: true, // 默认
+      httpOnly: true, // true 表示只有服务器端可以获取 不可以通过在页面log(document.cookies)获取
+       signed: true, // 默认签名
+       rolling: false, // 每次访问都更新session，30秒过期但是在30秒之前再次访问该浏览器，立即强制重设session再次30秒
+       renew: false // 30秒过期前访问，会在快到30秒时，才去做一个重新设置session
+   }
+
+   app.use(session(CONFIG, app))
+
+4.使用session（可以存放中英文）
+//设置session
+    const list = {
+        name: '张三'
+    }
+    ctx.session.userInfo = list.name
+
+//获取session
+    const data = ctx.session.userInfo

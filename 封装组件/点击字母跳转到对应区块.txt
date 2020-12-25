@@ -1,0 +1,22 @@
+link中需要动态绑定href，:href=“'city-'+item”
+然后区块也要动态绑定id，:id="'city-'+item"
+
+     <dl class="m-category">
+        <dt>按拼音首字母选择</dt>
+        <dd v-for="(item, index) in list" :key="item">
+          <a :href="'#city-'+item">{{ item }}</a>
+        </dd>
+      </dl>
+      <dl class="m-category-section" v-for="(item, index) in block" :key="item.title">
+        <dt :id="'city-'+item.title">{{item.title}}</dt>
+        <dd>
+          <span v-for="c in item.city" :key="c">{{c}}</span>
+        </dd>
+      </dl>
+
+
+      data () {
+          return {
+            list: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
+          }
+      },

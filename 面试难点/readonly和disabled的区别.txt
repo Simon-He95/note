@@ -1,0 +1,6 @@
+简述readonly与disabled的区别：
+
+	readonly只针对 input（text/password）和textarea有效 => 一些需要输入的表单元素
+	而disabled对于所有的表单元素都有效，当表单元素在使用了disabled后，
+	当我们将表单以POST或GET的方式提交的话，这个元素的值不会被传递出去，
+	而readonly会将该值传递出去

@@ -1,0 +1,220 @@
+//创建一个立方体几何对象Geometry
+var geometry = new THREE.BoxGeometry(100, 100, 100);  
+方法参数：BoxGeometry(width, height, dept, widthSegments, heightSegments, depthSegments) 
+- width,height,dept分别是长宽高 
+-widthSegments, heightSegments, deptSegments是对应长宽高的分段
+
+
+//创建一个球体几何对象
+var geometry = new THREE.SphereGeometry(60, 40, 40); 
+方法参数：SphereGeometry(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength) 
+- radius：球体半径 
+- widthSegments, heightSegments：水平方向和垂直方向上分段数。widthSegments最小值为3，默认值为8。heightSegments最小值为2，默认值为6。 
+- phiStart：水平方向上的起始角,默认值0 
+- phiLenght：水平方向上球体曲面覆盖的弧度，默认Math.PI * 2 
+- thetaStart : 垂直方向上的起始角， 默认0 
+- thetaLength: 垂直方向是球体曲面覆盖的弧度，默认值为Math.PI
+
+//创建一个平面多边形（ShapeGeometry）
+var rectShape= new THREE.Shape();
+方法参数：ShapeGeometry(shapes, options) 
+- shapes形状数组 
+- 可选的参数对象，可配置参数curveSegments, meterial, UVGenerator。
+
+//材质对象Material(立方体的颜色)
+属性
+-color	材质颜色，比如蓝色0x0000ff
+-wireframe	将几何图形渲染为线框。 默认值为false
+-opacity	透明度设置，0表示完全透明，1表示完全不透明，必须在transparent为true时才生效
+-transparent	是否开启透明，默认false
+-side		默认值是THREE.FrontSide，表示前面，也可以设置为后面THREE.BackSide 或 双面THREE.DoubleSide
+var material=new THREE.MeshLambertMaterial({ // 针对不同的对象选用材质的类型
+    color:0xff0000, //材质颜色，比如蓝色0x0000ff
+    wireframe: false, //将几何图形渲染为线框。 默认值为false
+    side: THREE.DoubleSide //两面可见
+    opacity:0.7, //透明度设置，0表示完全透明，1表示完全不透明
+    transparent:true //透明 true、false
+})
+材质类型 //网格模型对象
+MeshBasicMaterial	基础网格材质，不受光照影响的材质——通过.Mesh方式创建
+MeshLambertMaterial	Lambert网格材质，与光照有反应，漫反射——通过.Mesh方式创建
+MeshPhongMaterial	高光Phong材质,与光照有反应——通过.Mesh方式创建
+MeshStandardMaterial	PBR物理材质，相比较高光Phong材质可以更好的模拟金属、玻璃等效果——通过.Mesh方式创建
+PointsMaterial		点渲染模式——通过.Points方式创建，size：10.0 //点对象像素尺寸，vertexColors: THREE.VertexColors //以顶点颜色为准
+LineBasicMaterial		线条渲染模式——通过.Line方式创建，属于自定义几何体中，从第一个点开始到最后一个点，依次连成线
+
+//网格模型对象Mesh
+ var mesh = new THREE.Mesh(geometry, material);  // 把模型和材质添加到Mesh中，然后在把Mesh添加到场景中
+ var points = new THREE.Points(geometry, material); //点模型对象
+ var line=new THREE.Line(geometry,material); //线条模型对象,按顶点顺序依次连接，最后一根顶点不与起始顶点相连
+ var line=new THREE.LineLoop(geometry,material); //连线的时候会闭合把第一个顶点和最后一个顶点连接起来
+ var line=new THREE.LineSeqments(geometry,material); //LineSegments则是顶点不共享，第1、2点确定一条线，第3、4顶点确定一条直线，第2和3点之间不连接 ——有点像平行线
+  scene.add(mesh); //网格模型添加到场景中
+
+//点光源（当立方体渲染后，发现背面是灰暗的，因为光源照不到，需要再添加一个光源）
+    var point = new THREE.PointLight(0xffffff); // 光照参数0x444444改为0xffffff,你会发现场景中的立方体渲染效果更明亮。
+    var point2 = new THREE.PointLight('white');
+    point.position.set(400, 200, 300); //点光源位置 立方体打光的位置 （0,0,0）代表在立方体内部，所以是全黑的
+    point2.position.set(-400, -200, -300); //背面点光源位置
+    scene.add(point); //点光源添加到场景中
+    scene.add(point2); //点光源2添加到场景中
+方法参数：PointLight( color : Integer, intensity : Float, distance : Number, decay : Float )
+color - (可选参数)) 十六进制光照颜色。 缺省值 0xffffff (白色)。
+intensity - (可选参数) 光照强度。 缺省值 1。 
+distance - 这个距离表示从光源到光照强度为0的位置。 当设置为0时，光永远不会消失(距离无穷大)。缺省值 0.
+decay - 沿着光照距离的衰退量。缺省值 1。 在 physically correct 模式中，decay = 2。
+
+//环境光
+    var ambient = new THREE.AmbientLight(0x444444); // 其作用是为了弱化阴影或给场景添加一些额外的颜色
+
+ //相机设置
+    var width = window.innerWidth; // 窗口宽度
+    var height = window.innerHeight; // 窗口高度
+    var k = width / height; //窗口宽高比
+    var s = 200; // 三维场景显示范围控制系数，系数越大，显示的范围越大
+
+//创建相机对象
+    var camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+    camera.position.set(100, 100, 100); // 设置相机位置
+    camera.lookAt(scene.position); // 设置相机方向(指向的场景对象)
+
+//创建渲染器对象
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(width, height); // 设置渲染区域尺寸
+    renderer.setClearColor(0xb9d3ff, 1); // 设置背景颜色
+    document.body.appendChild(renderer.domElement); // body元素中插入canvas对象
+
+//旋转动画、requestAnimationFrame周期性渲染
+    let T0 = new Date();//上次时间
+    function render() {
+            let T1 = new Date();//本次时间
+            let t = T1-T0;//时间差
+            T0 = T1;//把本次时间赋值给上次时间
+            requestAnimationFrame(render);//请求再次执行渲染函数render
+            renderer.render(scene,camera);//执行渲染操作   指定场景、相机作为参数
+            mesh.rotateY(0.001*t);//旋转角速度0.001弧度每毫秒
+            mesh.rotateX(0.001*t);//旋转角速度0.001弧度每毫秒
+        }
+    render();
+
+//鼠标操作三维场景(借助three.js众多控件之一OrbitControls.js)
+  引入OrbitControls.js
+  如果render方法中requestAnimationFrame(render)，再次执行render方法addEventListener鼠标监听事件就可以不需要了
+    var controls = new THREE.OrbitControls(camera,renderer.domElement);//创建控件对象
+    controls.addEventListener('change', render);//监听鼠标、键盘事件
+
+//常见几何体：
+//长方体 参数：长，宽，高
+  var geometry = new THREE.BoxGeometry(100, 100, 100);
+// 球体 参数：半径60  经纬度细分数40,40
+  var geometry = new THREE.SphereGeometry(60, 40, 40);
+// 圆柱  参数：圆柱面顶部、底部直径50,50   高度100  圆周分段数
+  var geometry = new THREE.CylinderGeometry( 50, 50, 100, 25 );
+// 正八面体
+  var geometry = new THREE.OctahedronGeometry(50);
+// 正十二面体
+  var geometry = new THREE.DodecahedronGeometry(50);
+// 正二十面体
+  var geometry = new THREE.IcosahedronGeometry(50);
+
+//同时绘制多个几何体
+通过创建不同名字的几何体和对应的材质，添加到不同的网络模型对象Mesh上，再在scene场景上分别添加对应的mesh1，mesh2，mesh3，
+可以通过mesh1.translateY（120）,来改变几何体位置的不同
+  var geometry1 = new THREE.BoxGeometry(100, 100, 100);
+  var material1 = new THREE.MeshLambertMaterial({
+    color: 0x0000ff
+  }); //材质对象Material
+  var mesh1 = new THREE.Mesh(geometry1, material1); //网格模型对象Mesh
+  scene.add(mesh1); //网格模型添加到场景中
+
+//自定义几何体
+     var geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
+    //类型数组创建顶点数据
+    var vertices = new Float32Array([
+    0, 0, 0, //顶点1坐标
+    50, 0, 0, //顶点2坐标
+    0, 100, 0, //顶点3坐标
+    0, 0, 10, //顶点4坐标
+    0, 0, 100, //顶点5坐标
+    50, 0, 10, //顶点6坐标
+    ]);
+    // 创建属性缓冲区对象
+    var attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组，表示一个顶点的xyz坐标
+    // 设置几何体attributes属性的位置属性
+    geometry.attributes.position = attribue;
+
+//顶点颜色数据插值计算——点模型 (如果换成线或者mesh填充会出现渐变的过程)
+     var geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
+    //类型数组创建顶点数据
+    var vertices = new Float32Array([
+    0, 0, 0, //顶点1坐标
+    50, 0, 0, //顶点2坐标
+    0, 100, 0, //顶点3坐标
+    0, 0, 10, //顶点4坐标
+    0, 0, 100, //顶点5坐标
+    50, 0, 10, //顶点6坐标
+    ]);
+    // 创建属性缓冲区对象
+    var attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组，表示一个顶点的xyz坐标
+    // 设置几何体attributes属性的位置属性
+    geometry.attributes.position = attribue;
+    //顶点的颜色rgb3位：0~1范围
+    var colors = new Float32Array([
+    0.5, 0, 1, //顶点1颜色
+    0, 1, 0, //顶点2颜色
+    0, 0, 1, //顶点3颜色
+
+    1, 1, 0, //顶点4颜色
+    0, 1, 1, //顶点5颜色
+    1, 0, 1, //顶点6颜色
+  ]);
+  // 设置几何体attributes属性的颜色color属性
+  geometry.attributes.color = new THREE.BufferAttribute(colors, 3); //3个为一组,表示一个顶点的颜色数据RGB
+  //材质对象
+  var material = new THREE.PointsMaterial({
+    // 使用顶点颜色数据渲染模型，不需要再定义color属性
+    // color: 0xff0000,
+    vertexColors: THREE.VertexColors, //以顶点颜色为准
+    size: 10.0 //点对象像素尺寸
+  });
+  // 点渲染模式  点模型对象Points
+  var points = new THREE.Points(geometry, material); //点模型对象
+  scene.add(points); //点对象添加到场景
+
+//立方体3个顶点的颜色达到彩色面
+  var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+  geometry.faces.forEach(face => {
+    // 设置三角面face三个顶点的颜色
+    face.vertexColors = [
+      new THREE.Color(0xffff00),
+      new THREE.Color(0xff00ff),
+      new THREE.Color(0x00ffff),
+    ]
+  });
+  var material = new THREE.MeshBasicMaterial({
+    // color: 0x0000ff,
+    vertexColors: THREE.FaceColors,
+    // wireframe:true,//线框模式渲染
+  }); //材质对象Material
+
+//删除立方体的某面
+       var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+        // pop()：删除数组的最后一个元素   shift：删除数组的第一个元素
+        geometry.faces.pop();
+        geometry.faces.pop();
+        geometry.faces.shift();
+        geometry.faces.shift();
+        var material = new THREE.MeshLambertMaterial({
+        color: 0x0000ff,
+        side: THREE.DoubleSide, //两面可见
+        }); //材质对象Material
+
+//立方体的放大、平移、旋转、居中：
+  // 几何体xyz三个方向都放大2倍
+  geometry.scale(2, 2, 2);
+  // 几何体沿着x轴平移50
+  geometry.translate(50, 0, 0);
+  // 几何体绕着x轴旋转45度
+  geometry.rotateX(Math.PI / 4);
+  // 居中：偏移的几何体居中
+  geometry.center();

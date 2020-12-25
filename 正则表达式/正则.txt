@@ -1,0 +1,31 @@
+\w	任意字母、数字、_   		[A-z0-9_]
+\W	除了任意字母、数字、_  	[^A-z0-9_]
+\d	任意数字  			[0-9]
+\D	除了任意数字	   	[^0-9]
+\s	空格 			
+\S	除了空格	   	
+\b	单词边界			
+\B	除了单词边界
+
+
+// 匹配邮箱 xxx.xx@xxx.com.cn
+// 任意字母数字下划线 .任意字母（可有可无） @ 任意字母 .任意字母（2-5位）.任意字母（2-5位）
+var str = 'www.13917107469.hello@163.com.cn'
+var reg = /\w{3,}(\.\w+)*@[A-z0-9]+(\.[A-z]{2,5}){1,2}$/
+var result = reg.test(str)
+console.log(result)
+
+// 匹配手机号 （11位）
+// var str = 13917107469
+// var reg = /^1[3-9][0-9]{9}$/ // 1开头，第二位3-9
+// var result = reg.test(str)
+
+// 匹配独立的单词
+// var str = 'hello child children'
+// var reg = /\bchild\b/
+// var result = reg.test(str)
+
+//删除文本以外的空格
+var str = '    hell o    '
+var reg = /^\s*|\s*$/g //去除前面的空格和后面的空格
+var result = str.replace(reg, '')

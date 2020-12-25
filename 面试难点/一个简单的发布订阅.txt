@@ -1,0 +1,26 @@
+        // 实现一个简单的发布订阅
+        var shoeObj = {}
+        shoeObj.lists = {}
+        shoeObj.listen = function(key, fn) {
+            // 增加一个key，只接收到订阅店铺的消息
+            if (!this.lists[key]) {
+                this.lists[key] = []
+            }
+            this.lists[key].push(fn)
+        }
+        shoeObj.trigger = function() {
+            var key = Array.prototype.shift.call(arguments)
+            var fns = this.lists[key]
+            for (var i = 0, fn; fn = fns[i++];) {
+                fn.apply(this, arguments)
+            }
+        }
+        shoeObj.listen('red', function(size) {
+            console.log('尺码', size)
+        })
+        shoeObj.listen('blue', function(size) {
+            console.log('尺码', size)
+        })
+        shoeObj.trigger('red', 40)
+        shoeObj.trigger('blue', 55)
+        shoeObj.trigger('blue', 66)

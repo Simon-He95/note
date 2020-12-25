@@ -1,0 +1,39 @@
+key是用来做dom的diff
+diff主要是同级比较，比较当前标签的key和标签名，如果都相同，如果只是节点的移动，他会根据key来做移动，而不会创新销毁创建
+
+没有key的情况会出现问题（暴力比对）
+  效果：	口 true
+	口 false
+	口 true
+	删除
+1.如果我勾选了第一个，点击删除后
+  效果：	选中 false
+	口 true
+  因为vue采用复用的策略，不考虑从前还是从后删除，只考虑多出的内容
+  删除完之后会做一个比对，变成2个框，都一样会复用原本的li和checkbox，只把true改为false，再做比对，发现多了最下面一个，把他删除，实际删除的是最后一个
+2.如果我勾选最后一个，点击删除后
+  效果：	口 true
+	口 false
+  同样变成2个，复用原本的然后再做比对，原本是2个没有变动直接复用，多出了最后一个，直接删除，删除的是最后一个
+
+key最好不要使用索引 0 1 2，因为删除完之后仍然是0 1 2，删除仍然会出错，需要放入一个唯一标识的key
+总结：v-for没有key时，节点发生改变，会去一次次的重新创建，而有key就会去移动节点
+
+  <ul>
+       <li v-for="item in lists">
+	<input type="checkbox" :value="item.check">
+	{{ item.check }}
+        </li>
+        <button @click="delete">删除</button>
+   </ul>
+
+data () {
+   return {
+      lists: [{check: true, id: 1}, {check: false, id: 2}, {check: true, id: 3}]
+   }
+},
+methods: {
+  remove () {
+     this.lists.shift()
+  }
+}

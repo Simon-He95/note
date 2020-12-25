@@ -1,0 +1,40 @@
+生成器结合promise,实现async，await
+
+function* read() {
+ let value1 = yield readFile('./1.txt','utf-8')
+ let value2 = yield readFile('./2.txt','utf-8')
+ let value3 = yield readFile('./3.txt','utf-8')
+}
+
+function Co(iter){
+  return new Promise((resove,reject) => {
+	let next = (data) => {
+	   let {value,done} = iter.next(data)
+	   if(done) {
+	      resolve(data)
+	   }else {
+	      value.then(val => {
+	         next(val)
+	      })
+	   }
+	}
+	next()
+     })
+}
+
+let promise = Co(read())
+promise.then(res => {
+   console.log(res)
+})
+
+// 转换成async,await ,相比生成器更优化，省去了构建执行器的过程并且也是返回promise类型
+async function readSync() {
+      let value1 = await readFile('./1.txt', 'utf-8')
+      let value2 = await readFile('./2.txt', 'utf-8')
+      let value3 = await readFile('./3.txt', 'utf-8')
+      return value3   // 改成async记得return
+}
+let promise = readSync()
+promise.then(res => {
+      console.log(res)
+})

@@ -1,0 +1,48 @@
+// 冒泡是从点击的元素开始往外触发事件
+            d1.onclick = function(e) {
+                console.log(e.target)
+                console.log('d1')
+            }
+            d2.onclick = function() {
+                console.log('d2')
+            }
+            d3.onclick = function() {
+                console.log('d3')
+            }
+
+        d1.addEventListener('click', (e) => {
+            console.log(e.target)
+            console.log('d1')
+        })
+        d2.addEventListener('click', () => {
+            console.log('d2')
+        })
+        d3.addEventListener('click', () => {
+            console.log('d3')
+        })
+//捕获 addEventListener的第三个参数默认是false，代表使用冒泡事件流，
+//如果改为true代表事件捕获 = > 事件捕获是从外向内传播
+        d1.addEventListener('click', (e) => {
+            console.log(e.target)
+            console.log('d1')
+        }, true)
+        d2.addEventListener('click', () => {
+            console.log('d2')
+        }, true)
+        d3.addEventListener('click', () => {
+            console.log('d3')
+        }, true)
+
+//阻止默认事件冒泡有2种
+//1.  e.stopPropagation(),阻止事件向上冒泡，但不会阻止该元素上 其他事件继续
+//2.  e.stopImmediatePropagation()，阻止事件向上冒泡，同时会阻止该元素上其他事件继续
+
+        d3.addEventListener('click', (e) => {
+            // e.stopPropagation()
+            e.stopImmediatePropagation()
+            console.log('d3')
+        })
+        d3.addEventListener('click', (e) => {
+            console.log('d3-111')
+        })
+

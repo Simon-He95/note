@@ -1,0 +1,8 @@
+本地对象：
+	Array、Object、Regexp、Function、String、Boolean等等可以new实例化
+
+内置对象：
+	Global和Math等不可以实例化的（关于Global对象，我们无法在浏览器中发现它的存在，因为它的属性和方法都被绑定在window对象中）
+
+宿主对象：
+	每一个宿主对象的实现都是取决于不同的浏览器的，所以才会产生浏览器的兼容性问题，宿主为浏览器自带的window和document等

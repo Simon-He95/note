@@ -1,0 +1,27 @@
+最早前后端不分离，不存在跨域问题，代码资源都在同一个根源下，但是这样会存在一个问题，后端要等前端写完才能，接着写。
+后来提出了前后端分离的概念，各自写各自的代码，然后通过ajax链接请求前端的js，css文件资源，同时又请求后端接口返回数据，甚至可能图片和视频单独放一个服务器来请求，就产生了跨图问题
+
+最早是使用jsonp来实现跨域的
+缺点：只能通过GET请求，数据会存放在url中不安全，有缓存，get请求的传参存在大小的限制
+jsonp是利用script标签可以通过cdn的方式引入，通过get请求明文在url传递一个callback的func，服务器接收到了，把数据返回成“fu'nc（data）”的形式，浏览器解析成一个执行的方法来执行，从而我们可以拿到跨域的数据。
+
+产生了想要通过post请求来实现jsonp的想法和尝试
+后来产生了iframe结合以下来实现跨域 —— iframe结合实现，存在一些问题，需要主域相同，子域不同，也是存在限制
+通过document.domain 实现
+通过location.hash实现
+通过window.name实现
+通过HTML5的window.postMessage
+
+跨域问题是因为服务器不允许，只要让服务器允许就可以了
+由此出现了CORS跨域资源共享
+axios.defualt.timeour = 10000;设置一个请求超时时间
+axios.default.withCredential = true,运行携带cookie的一些资源凭证
+CORS的跨域需要服务端可能是添加一个中间件来设置'Access-control-allow-origin',"",Access-control-allow-credentials, true,
+使用CORS跨域首先会发一次试探性请求，服务端需要返回一个成功的消息，代表跨域成功（预检请求）
+
+Htpp Proxy代理处理跨域 ——在开发环境下可以，在真实部署时，需要服务器做ngix的反向代理
+默认axios.default.baseUrl = '' 不填会请求发送到我们本地localhost
+而proxy就是将所有本地的请求代理到服务器上，实现了跨域
+而webpack的devServer已经替我们实现了，我们只需要在package.json中加入
+"proxy": "服务端的地址和端口"
+

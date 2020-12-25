@@ -1,0 +1,30 @@
+数组拷贝：
+ => 深度拷贝 (拷贝对象的所有属性作为一个全新的对象。拷贝前后的对象互不影响)
+1.slice
+	let a = [1,2,3]
+	let copy = a.slice(start,end) 
+
+2.JSON.stringify和JSON.parse
+	var a = [1,2,3]
+	var b = JSON.parse(JSON.stringify(a))
+
+=> 浅拷贝（只拷贝对象的基础属性值，对属性值为对象或数组的属性则拷贝指针：前一个数变了会影响后一个）
+1.concat 2个对象拼接起来,并创造新对象，原对象的数据是不会发生改变
+	var arr0 = ['11']
+	var arr1 = [{"name":"weifeng"},{"name":"boy"}];//原数组
+	var arr2 = arr0.concat(arr1);//拷贝数组
+
+2.[...arr]
+	var a = [1,2,3]
+	var b = [...a]
+
+3.Arrary.from
+	var a = [1,2,3]
+	var b = Array.from(a)
+
+4.循环push
+	var a = [1,2,3]
+	var b = []
+	a.filter(item => {
+	    b.push(item);
+	})

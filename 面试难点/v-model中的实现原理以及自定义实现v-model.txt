@@ -1,0 +1,69 @@
+v-model可以看成是value+input方法的语法糖 
+
+<el-checkbox v-model="check"></el-checkbox>
+原理：
+1.组件中的v-model处理
+const VueTemplateCompiler = require('vue-template-compiler')
+const ele = VueTemplateCompiler.compile('<el-checkbox v-model="check"></el-checkbox>')
+解析成:
+	with(this){
+	   return _c('el-checkbox', {
+	      model: {
+	         value: (check),
+	         callback: function ($$v) {
+		check = $$v
+	         },
+	         expression: "check"
+	      }
+	   })
+	}
+
+if(isDef(data.model)) { // 获取当前数据的model，如果model有数据
+   transforModel(Ctor.options, data) // 转化model	
+}
+function transforModel （options，data：any）{
+   const prop = (options.model && options.model.prop) || 'value' // 如果没有prop属性默认给一个value
+   const event = (options.model && options.model.event) || 'input' // 如果没有event属性默认给一个input
+   (data.attrs || (data.attrs = {}))[prop] = data.model.value // data.attrs.value = data.model.value // 把输入的数据赋给data.attrs.value
+  通过data.on事件传入event 等于input，on来执行这个input传入callback，这个callback就是输入的内容，执行input
+	input（callback）{
+	   check = callback
+	}
+  @change="check"或者@expand-change，此类都是自定义v-model,实际就是如下on中执行这个change方法，把$event.target.check传入给这个方法
+  model: {
+     prop: 'check',
+     event: 'change'
+  }，
+  props：{
+     check: 'value'
+  }
+}
+
+2.在普通元素执行v-mode处理：
+<input v-model="value" />
+解析成：
+	width(this){
+	   return _c('input', {
+	      directives: [{
+		name: "model",
+		rawName: "v-model",
+		value: (value),
+		expression: "value"
+	      }],
+	      domProps: {
+		"value": (value)
+	      },
+	      on: {
+		"input": function ($event) {
+		   if ($event.target.composing) return; // composing是用来判断现在是否是预输入而确定是否需要实时更新
+		   value = $event.target.value
+		}
+	      }
+ 	   })
+	}
+如果是普通标签v-mode和组件其他都一样把input方法加入on，传入e把e.target.value赋给value，但是多了一个directives指令
+如果type="checkbox"
+   这个domProps会变成checked，on里的事件也会根据这个type发生改变，checkbox这里是change
+这个directives指令做了什么呢？
+  添加了2个事件来做校验，el.addEventListener('compositionstart', onCompositionStart)和el.addEventListener('compositionend', onCompositionEnd)
+  对于输入若干可见字符之前做一些键盘操作、语音识别、点击输入法的备选词

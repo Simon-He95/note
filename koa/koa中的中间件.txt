@@ -1,0 +1,54 @@
+app.use(async (ctx, next) => {
+
+   console.log(new Date())
+   await next()
+})
+
+这样我们在匹配每一个路由的时候都会打印出一个时间
+在匹配路由之前做的操作
+
+路由级中间件，匹配到'/',如果不调用next，就会404，但是使用了next，会接着往下匹配
+router.get('/', async (ctx, next) => {
+   console.log('11')
+   await next()
+})
+
+router.get('/', async ctx => {
+  ctx.body = "hello"
+})
+
+*koa如何匹配404页面
+地址www.aaa.com/xxx => 匹配xxx
+router.get('/xxx', async ctx => {
+  ctx.body = 'xxx'
+})
+app.use(async (ctx, next) => { 
+// 执行顺序=>限制性中间件console.log
+//然后执行next去匹配路由，匹配完后再进入if判断
+//如果匹配到了返回ctx，并打印’匹配到正确的地址‘
+//否则返回’page not found 404‘
+  console.log('中间件')
+  await next()
+   if(ctx.status === 404) {
+      ctx.body = "page not found 404"
+   }else {
+      console.log('匹配到正确的地址')
+   }
+})
+
+*koa执行流程
+app.use(async (ctx, next) => {
+   console.log("1")
+   await next()
+   console.log("5")
+}）
+app.use(async (ctx, next) => {
+   console.log("2")
+   await next()
+   console.log("4")
+}）
+router.get('/news', async ctx => {
+   console.log('3')
+   ctx.body = 'news'
+})
+打印出 1、2、3、4、5顺序，从上至下先执行中间件到next去匹配路由，路由结束再从最后一个中间件next下面内容执行 => 洋葱的模型

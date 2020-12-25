@@ -1,0 +1,7 @@
+1. onload：
+	window.onload事件触发，页面上所有的DOM，样式表，脚本，图片，flash都加载完成，才会触发
+
+2. DomContentLoaded:
+	window.DomContentLoaded事件触发，仅当DOM加载完成，不包括样式表，图片，flash
+
+因为浏览器解析HTML时，先生成DOM树，然后解析css对象模型，最后将css模型和dom树结合成渲染树，去布局和绘制，属于2个事件的执行中的2个钩子函数

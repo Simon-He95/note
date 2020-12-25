@@ -1,0 +1,3 @@
+get  ：    =>  ctx.query
+
+post:       =>  ctx.request.body

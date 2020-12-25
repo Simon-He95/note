@@ -1,0 +1,55 @@
+理解：（LRU算法）
+   keep-alive 可以实现组件的缓存，当组件切换时不会对当前组件进行卸载，常用的2个属性include/exclude，2个生命周期activated，deactivated
+
+原理：
+   是一个抽象组件
+export default {
+   name：‘keep-alive’，
+   abstract：true，
+   props：{
+      include：patternTypes，
+      exclude：patternTypes，
+      max：[String, Number]
+   },
+   created (){
+      this.cache = Object.create(null) // 创建缓存列表
+      this.keys = [ ] // 创建缓存组件的key列表
+   }，
+   destroyed (){ // keep-alive销毁时，会清空所有的缓存和key
+      for (const key in this.cache){
+	pruneCacheEntry(this.cache, key, this.keys)
+      }
+   }，
+   mounted (){ // 会监控include 和 exclude属性，进行组件的缓存处理 =>发生变化动态的去添加或者删除缓存
+      this.$watch('include', val => {
+	pruneCache(this, name => matches(val, name))
+      })
+      this.$watch('exclude', val => {
+	pruneCache(this, name => !matches(val, name))
+      })
+   }
+   render (){
+      const slot = this.$slots.default // 会默认拿插槽
+      const vnode: VNode = getFirstComponentChild(slot) // 只缓存第一个组件，keep-alive中如果存在多个组件只能缓存第一个组件
+      这里会通过getComponentName（componentOptions）获取组件的名字，然后做一个判断
+      1.如果下一次调用有存在当前匹配的名字，就调用缓存
+         进入缓存时，会创建一个key，key等于vnode.key，如果组件没key，就通过组件的标签和cide拼接作为key
+         判断cache[key]如果存在，代表使用原本缓存中的组件，会将原本缓存中的对应元素删除，再重新push进入一个相同的元素
+         这里牵扯到LRU算法，因为keys数组是有最大长度的，当每次有新的缓存进入，会去删除最久未使用的元素，而使用过的，删除原本的位置重新push，放到最后位置=>[a,b,c,d],使用b后=>[a,c,d,b],如果最大长度是4，此时加入e，[c,d,b,e],这就是LRU的原理       
+         if (cache[key]) { //判断key如果存在
+	vnode.componentInstance = cache[key].componentInstance // 直接拿到组件实例
+	remove(keys, key)
+	keys.push(key)
+         }
+      2.如果调用时不存在与当前匹配的名字，直接返回这个vnode
+         再cache[key]判断时，不存在，说明这是新的组件，需要创建缓存，cache[key] = vnode, 同时keys数组push这个key，如果keys的长度超出了限制，就需要删除最久未使用的缓存的key元素=>keys[0]
+         if(cache[key]){
+         }else {
+	cache[key] = vnode // 缓存vnode
+	keys.push(key) // 将key 存入 keys
+	if (this.max && keys.length > parseInt(this.max)) { // 缓存的太多超过了max，需要删除keys中的元素
+	   pruneCacheEntry(cache, keys[0], keys, this._vnode) // 删除keys[0]，但是现在渲染的就是第0个
+	}
+         }
+   }
+}

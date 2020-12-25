@@ -1,0 +1,36 @@
+ajax的工作原理：
+	ajax是一种异步请求，异步是为了进行局部刷新，提升用户体验，是在2005年诞生的
+
+缺点：
+	1. ajax不支持浏览器back按钮
+	2. 安全问题，ajax暴露了与放服务器交互的细节
+	3. 对搜索引擎的支持比较弱	// 因为搜索引擎不会执行你的js脚本，只会操作你的网页源代码
+	4. 破坏了程序的异常机制	// 可以通过异常捕获来解决
+	5. 无法跨域请求		// jsonp来解决
+
+1. 首先创建一个XMLHttpRequest对象
+	var xmlhttp = new XMLHttprequest()
+
+2. 设置回调函数
+	hxmlhttp.onreadystate = function() {
+	   if(xmlhttp.status === 200 || xmlhttp.status === 304) {
+	       // 获取响应码，200：成功，304：无修改，从缓存读取
+		var result = xmlhttp.responseText // 获取相应文本
+	   }
+	}
+
+3. 设置请求地址
+	var url = "hejian.club?action=showUser" // post请求
+	var id = "123"
+	var data = "id="+id // post请求带参
+	var url = "hejian.club?action=showUser&id="+id // get请求
+
+4. 设置open()方法
+	xmlhttp.open("POST", url, true) // 默认true（异步请求），false（同步请求）
+
+5. 设置请求头
+	xmlhttp.setRequestHeader("Content-Typee", "application/x-www-form-urlencoded")
+
+6. 发送请求
+	xmlhttp.send(data) // POST请求，需要传参
+	xmlhttp.send() // GET请求，直接带在url中

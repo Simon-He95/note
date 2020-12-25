@@ -1,0 +1,27 @@
+虚拟节点就是用一个对象来描述真实的dom元素
+
+<div id="container"><p></p></div>
+
+let obj = {
+   tag: 'div',
+   data: {
+      id: 'container'
+   },
+   children: [
+      {
+         tag: 'p',
+         data: {},
+         children: []
+      }
+   ]
+}
+将模板转化成ast树，就将对象转化为真实的js语法，通过codegen
+将js语法转化成render函数，内部调用_c(),将render函数转化为虚拟dom
+render（）{
+   return _c('div', { id: 'container' }, _c('p', {}))
+}
+
+function _c(tag, data, ...children) {
+   // tag等同于最外层父节点div，data对应属性id，...children对应n个_c组成的数组
+  遍历children如果child是对象则继续调用_c，取属性，再细分直到这个child是字符串，返回text文本
+}

@@ -1,0 +1,36 @@
+遍历和迭代有什么区别：
+  迭代：从目标源（有序的、连续的结构），依次逐个抽取的方式来提取数据的方式
+  遍历：是一种通用的方式，不像迭代需要依次抽取
+
+for of 是针对对象的[Symbol.iterator]属性，一般数组或者字符串的原型上会有这个属性
+
+// 使obj可用for..of迭代
+
+let obj = {
+    a: 1,
+    b: 2,
+    c: 3,
+    [Symbol.iterator]() {
+        var index = 0
+        let map = new Map()
+        map.set('a', 1).set('b', 2).set('c', 3)
+        return {
+            next() {
+                var mapEntries = [...map.entries()]
+                if (index < map.size) {
+                    return {
+                        value: mapEntries[index++],
+                        done: false
+                    }
+                }
+                return {
+                    value: undefined,
+                    done: true
+                }
+            }
+        }
+    }
+}
+for (let k of obj) {
+    console.log(k)
+}

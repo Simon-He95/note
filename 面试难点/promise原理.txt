@@ -1,0 +1,60 @@
+let RESOLVE = 'resolve'
+let REJECT = 'reject'
+let PENDING = 'pending'
+
+class myPromise {
+    status = PENDING
+    result = undefined
+    reason = undefined
+    ResolveArr = []
+    RejectArr = []
+    constructor(excution) {
+        const resolve = (result) => {
+            if (this.status === PENDING) {
+                this.result = result
+                this.status = RESOLVE
+                this.ResolveArr.map(fn => fn())
+            }
+        }
+        const reject = (reason) => {
+            if (this.status === PENDING) {
+                this.reason = reason
+                this.status = REJECT
+                this.RejectArr.map(fn => fn())
+            }
+        }
+        excution(resolve, reject)
+    }
+    then(onResolved, onRejected) {
+        if (this.status === RESOLVE) {
+            setTimeout(() => {
+                onResolved(this.result)
+            }, 0)
+        }
+        if (this.status === REJECT) {
+            setTimeout(() => {
+                onRejected(this.reason)
+            }, 0)
+        }
+        if (this.status === PENDING) {
+            this.ResolveArr.push(() => {
+                onResolved(this.result)
+            })
+            this.RejectArr.push(() => {
+                onRejected(this.reason)
+            })
+        }
+    }
+}
+
+
+let a = new myPromise((resolve, reject) => {
+    setTimeout(() => {
+            let name = "hejian"
+            resolve(name)
+        },
+        1000)
+})
+a.then(result => {
+    console.log(result)
+})

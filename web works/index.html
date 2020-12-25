@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input id='inp' type="text"> <button id='btn'>计算</button>
+    <script>
+        let Inp = document.getElementById('inp')
+        let Btn = document.getElementById('btn')
+
+
+        // H5引入了worker来解决，由于大量计算导柱堵塞主线程，从而把这个操作放到分线程来，，让用户能够继续操作
+        Btn.onclick = function() {
+            let value = Inp.value
+                // 处理web worker的跨域问题,让浏览器去请求importScripts => work.js
+            let blob = new Blob(['importScripts("file:///D:/local_project/web%20works/worker.js")'], {
+                "type": 'application/javascript'
+            })
+            let blobUrl = window.URL.createObjectURL(blob)
+
+            // 创建一个worker对象,传需要放在分线程的js的路径
+            let worker = new Worker(blobUrl)
+                // 接受分线程返回的消息
+            worker.onmessage = function(event) {
+                    var value = event.data
+                    console.log('接收到分线程传来的数据', value)
+                    alert(value)
+                }
+                // 发送消息给分线程
+            worker.postMessage(value)
+        }
+    </script>
+</body>
+
+</html>

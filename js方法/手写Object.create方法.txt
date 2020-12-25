@@ -1,0 +1,26 @@
+// 不兼容ie
+Object.create = function(obj) {
+    let oo = {}
+    oo.__proto__ = obj
+    return oo
+}
+
+let obj = {
+    name: 'zz',
+    age: 14
+}
+
+console.log(Object.create(obj))
+
+// 兼容ie
+Object.create = function(obj) {
+    function fn() {}
+    fn.prototype = obj
+    return new fn
+}
+
+let obj = {
+    name: 'zz',
+    age: 14
+}
+console.log(Object.create(obj))

@@ -1,0 +1,18 @@
+理解：
+同一个组件被复用多次，会创建多个实例。这些实例用的是同一个构造函数，如果data是一个对象的话。那么所有组件都共享了同一个对象。为了保证组件的数据独立性要求每个组件必须通过data函数返回一个对象作为组件的状态。
+	
+1.如果是字符串,new出来是公用的，字符串的元数据会被修改，再次取到的结果是第一个修改后的数据
+function VueComponent(){
+}
+
+VueComponent.prototype.$options = {
+   data={ name: 'zhangsan' }
+}
+let v1 = new VueComponent()
+v1.$options.data = 'jw';
+
+let v2 = new VueComponent()
+
+console.log(v2.$option.data) // jw
+2.变成函数，拿到组件之后调用函数，用对象做为属性和状态，每个组件调用都能返回一个全新的对象
+data () => ({ name: 'zhangsan' })

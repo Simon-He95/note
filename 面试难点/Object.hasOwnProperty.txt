@@ -1,0 +1,9 @@
+遍历对象的属性会遇到
+1.Object.keys IE9 ES5才支持
+
+2.通用会使用for...in，但是for in的问题会枚举出原型链上或者继承的一些属性，所以需要hasOwnProperty来判断，当前对象是否拥有该属性(过滤出继承的属性)
+	for(let key in obj) {
+		if(obj.hasOwnProperty(key)) {
+			// 获取obj上私有的属性
+		}
+	}

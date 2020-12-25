@@ -1,0 +1,25 @@
+v-if: （在编译阶段就变成四元运算符）
+内部会使用vue-template-compiler插件，他的作用，就是把<div v-if="true"><span v-for="i in 3">hello</span></div>,编译成
+   with(this) {
+	return (true) ? _c('div', _l((3), function (i) {
+	   return _c('span', [_v("hello")])
+	}), 0) : _e()
+   }
+如果为true通过with function的方式循环3次div，如果false返回_e(), _e()是创建一个空虚拟对象
+
+v-show：（编译成指令）
+同样会使用vue-template-compiler插件，把<div v-show="true"></div>，编译成
+   with(this) {
+      return _c('div'): [{
+	name: "show",
+	rawName: "v-show",
+	value: (true),
+	expression: "true"
+      }]
+   }
+内部使用了v-show的指令，运行时会处理这个指令，使用了directives下的show.js，内部有个bind方法
+   bind (el: any, { value }: VNodeDirective, vnode: VNodeWithData) { // 指令的编写
+        内部会判断v-show的值如果是true，会让display：'none';
+        如果为false，让display：originalDisplay ，保持原样
+   }
+

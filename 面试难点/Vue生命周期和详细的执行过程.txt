@@ -1,0 +1,17 @@
+1.new Vue()
+
+2.初始化this, 调用beforeCreate()，能够获取到this，但是method，watch，computed，data都获取不到，也不可调用，但是可以往this上添加属性和方法
+
+3.created()，实例完成了创建，可以访问到this，data，method，computed都被激活了，但是this.$el拿不到
+
+4.判断el是否指定，如果没指定就停止了，除非手动调用vm.$mount(el)时才继续，所有new Vue()，不传el也不会出错，就是在created停止下来了
+
+5. 判断有el或者template才会进入beforeMount，否则停止
+
+6.beforeMount()，开始解析template或者便利子节点，查找dom中一些特殊v-指令或者click事件，这里其实数据和之前是没有什么区别，仍然拿不到this.$el
+
+7.mounted()，把解析到的特殊指令，用this.$data中的数据替换，然后apend到this.$el中，调用mounted，所以此时是能拿到this.$el和refs
+
+8.beforeUpdate()，手动更改data中的数据触发set，是在递归调用dep.notify()去递归调用watcher.update()方法前调用beforeUpdate
+
+9.updated()，手动更改data中数据触发set，递归调用dep.notify()之后执行updated()

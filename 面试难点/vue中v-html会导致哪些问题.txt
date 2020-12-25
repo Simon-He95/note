@@ -1,0 +1,9 @@
+理解：
+1.可能会导致xss攻击
+2.v-html会替换掉标签内部的子元素
+
+<input type="text" v-model="msg" />
+<div v-html="msg"></div>
+如果我input输入<img src="" onerror="alert("1")" />
+会执行alert(1)，但是如果执行的是获取用户cookies，账号或者密码信息就会发生问题
+原理：就是在节点.innerHtml = “msg”

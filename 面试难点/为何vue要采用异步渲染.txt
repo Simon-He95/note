@@ -1,0 +1,12 @@
+如果不采用异步更新，那么每次更新数据都会对当前组件进行重新渲染。
+所以为了性能考虑，vue会再本轮数据更新后，再去异步更新视图。
+因为vue是数据驱动视图，不采用异步的话，一个页面有多个数据需要更新，我多个更新，然后一个个都会去重新渲染，
+为了避免性能的开销，采用异步，多个数据同时更新，比如先改了a数据，又改了b数据，他们对应了一个watcher，同一个watcher的话，会把相同的watcher过滤掉，等数据都改完了之后再去更新。
+原理：当数据变化，会调用dep.notify(),会通知watcher更新，watcher会调用update()方法更新，更新的时候并不是立即执行而是放入一个队列queueWatcher中，
+把watcher进行过滤，如果相同的watcher只会存放一个，最后再通过nextTick()异步的去刷新watcer队列。
+每一个属性会有一个dep，dep会对应自己的watcher，渲染时候会调用dep.notify方法，notify方法是通知存储的依赖更新，
+notify方法中会调用watcher的update()方法，update方法中会把watcher放入queueWatcher队列中，在queueWatcher队列中，首先更具watcher的id去过滤，没一个watcher都有自己对应的id，如果id相同，则不再放入队列中，以防多次更新，
+如果没有这个watcher.id存在就把watcher放入queue数组队列中，再最后会调用一个nextTick()的方法中调用flushScheduleQueue方法来清空队列
+nextTick(flushScheduleQueue),
+再flushScheduleQueue方法中，首先会触发before方法，一个更新之前的方法，然后去执行watcher，执行完之后页面就渲染完成，开始调用一些vue的生命周期钩子
+就是把多个watcher放入queue中然后通过nextTick异步的去刷新这个queue

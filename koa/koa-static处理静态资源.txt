@@ -1,0 +1,15 @@
+在.ejs模板引入样式<link rel="stylesheet" href="../static/css/base.css">，
+会解析成：http://localhost:3000/static/css/base.css，路由匹配是匹配不到的 => Not Found
+需要通过koa-static插件来解决
+
+安装koa-static：
+   npm i koa-static --save
+
+配置：（koa静态资源中间件可配置多个）
+   const static = require('koa-static')
+   app.use(static('static')) //配置web静态资源中间件
+   app.use(static('public')) //配置web静态资源中间件
+
+使用：
+       <link rel="stylesheet" href="/css/base.css"> // 直接使用static下的css路径
+       <image src="img/photo.png" /> // 匹配public下img路径下的phto.png

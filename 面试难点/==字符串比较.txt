@@ -1,0 +1,30 @@
+// '=='两边不一样数据转换规则： 
+//  1.对象==字符串，对象toString()变为字符串。 
+//  2.null == undefined，和其他值比较就不相等了。 
+//  3.NaN和任何东西包括自己不想当。 
+//  4.剩下的都是转化为数字
+var a = {
+    i: 0,
+    toString() {
+        return ++this.i
+    }
+}
+if (a == 1 && a == 2 & a == 3) {
+    console.log(1)
+}
+
+使用Object.defineProperty拦截,因为取a会从window.a拿，所以会触发get
+        var i = 0
+        Object.defineProperty(window, 'a', {
+            get() {
+                return ++i
+            },
+            set() {
+
+            },
+            configurable: false,
+            enumerable: true,
+        })
+        if (a == 1 && a == 2 && a == 3) {
+            console.log(1)
+        }

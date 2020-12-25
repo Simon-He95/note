@@ -1,0 +1,9 @@
+默认computed也是一个watcher，但是具备缓存的，只要当依赖的属性发生变化时才会更新视图
+computed、watcher、method区别
+  1.computed和method
+    computed是计算属性而method是方法，如果一个方法需要计算放到method在模板中执行，因为数据会变化就会驱动视图渲染，这样开销比较大，但是计算属性是具备缓存的，渲染的时候依赖的属性没有发生变化则不会重新执行，减少了重新计算的过程。
+  2.computed和watch
+    computed具备缓存
+
+原理computed计算时候会判断dirty:true进行计算，计算完成返回计算值并且把dirty:false，下一次执行，会判断如果计算的值发生变化才会重新计算取新值，否则就返回上一次的计算结果，利用dirty来实现缓存机制
+

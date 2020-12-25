@@ -1,0 +1,30 @@
+// 让child的原型指向parent的实例
+child.prototype = new parent()
+// 保证原型的完整性
+child.prototype.constructor = child
+
+缺点：
+    js中的原型继承是一种查找继承，不像一般java后台的继承属于拷贝继承，
+    所以查找继承会存在一些问题，因为它是把父类的原型放到子类的原型链上，可通过__proto__来调用父类的原型，
+    所以child.prototype.__proto__.self = function() {},会给父类的方法去新增或者重写原本的方法，
+    就是说子类能改变父类的基因
+
+function A(x) {
+    this.x = x
+}
+
+A.prototype.getX = function() {
+    console.log(this.x)
+}
+
+function B(y) {
+    this.y = y
+}
+
+B.prototype = new A(20)
+B.prototype.constructor = B
+
+B.prototype.getY = function() {
+    console.log(this.y)
+}
+let a = new B(11)

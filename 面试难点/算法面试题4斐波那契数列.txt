@@ -1,0 +1,5 @@
+// 斐波那契数列
+// [1,1,2,3,5,8,13]
+// function Fibonaccin(n) {
+//     return n <= 2 ? 1 : Fibonaccin(n - 1) + Fibonaccin(n - 2)
+// }

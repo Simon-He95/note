@@ -1,0 +1,24 @@
+生成器的特点 function* test()
+生成迭代器，可以使用生成器来实现
+yield会是函数暂停，如果函数中没有yield，只有return1，调用next会输出对象:{value: 1, done: true},而不像一般函数执行输出1,如果有yield1，调用next，输出{value: 1, done: false}
+function* test() {
+    yield 1;
+    yield 2;
+    yield 3;
+    yield 4;
+}
+let iter = test() // 函数不会执行，只有当调用iter.next()才会执行，使用for...of时候也会调用next()
+for (let k of iter) {
+    console.log(k)
+}
+生成器函数能够传参但是这个传参比较特殊，第二次的传参会赋给第一次
+function* test(){
+   let value1 = yield 1;
+   console.log(value1) // two
+   let value2 = yield 2;
+   console.log(value2) // three
+}
+let iter = test()
+iter.next('one')
+iter.next('two')
+iter.next('three')

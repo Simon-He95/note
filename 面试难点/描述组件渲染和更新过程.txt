@@ -1,0 +1,23 @@
+渲染组件时，会通过Vue.extend方法构建子组件的构造函数，并进行实例化。最终手动调用$amout()进行挂载。更新组件会进行patchVnode流程。核心就是diff算法
+
+理解：只要每次去创建一个组件就会调用Vue.extend，然后去new 一个实例，然后手动调用$amount挂载
+
+流程：
+vue的main.js中
+new Vue({
+h => h(App)
+})
+h()方法其实就是createElement，App就是一个对象，里面包含了template、render方法等等
+回去判断这个App是string还是对象，
+1.如果是string类型，则创建普通的dom的vnode
+2.如果不是string类型，使用createComponent来创建组件，调用Vue.extend来创建一个构造函数，如果想要创建组件的话，通过new这个构造函数来初始化，初始化完会增加钩子函数init、patch、insert、destory，返回组件vnode。
+等到我们调用vm._update()方法时，根据节点
+vnode = {
+ tag: "vue-component",
+ data: {hook: {init, patch, insert, destory},
+ children: undefined,
+ text: undefined,
+ elm: undefined,
+ componentOptions: {Ctor, propsData, listeners, tag, children}}
+ }
+判断是组件会调用组件的init方法，会new vnode.componentOptions.Ctor(options)，重新执行vue的渲染逻辑，给组件增加一个watcher，调用$mount(),插入到init中去

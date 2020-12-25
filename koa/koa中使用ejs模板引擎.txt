@@ -1,0 +1,21 @@
+1.安装koa-views和ejs
+   npm i koa-views ejs --save
+
+2.配置
+  const views = require('koa-views')
+  app.use(views('view', { // view代表路径是在view文件夹下
+      extension: 'ejs' // 指定模板引擎ejs
+   }))
+
+3.使用
+  router.get('/', async ctx => {
+      await ctx.render('index') // 匹配到view路径下的index.ejs
+   })
+
+*配置公共数据
+多个ejs模板可能都需要渲染同样的信息或者数据，如果通过在路由中去一个个传递，太冗余了，可以配置在中间件的ctx.state中
+   app.use(async (ctx, next) => {
+      ctx.state.publicData = '我是公共需要渲染的数据'
+      await next()
+   })
+在.ejs模板页面，直接使用<%=publicData%>,即可实现

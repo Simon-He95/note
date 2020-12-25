@@ -1,0 +1,8 @@
+BOM对象有哪些，列举window对象
+
+1. window对象，是JS的最顶层对象，其他的BOM对象都是window对象的属性；
+2. document对象，文档对象；
+3. location对象，浏览器当前URL信息；
+4. navigator对象，浏览器本身信息；
+5. screen对象，客户端屏幕信息；
+6. history对象，浏览器访问历史信息；

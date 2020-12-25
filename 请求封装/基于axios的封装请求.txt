@@ -1,0 +1,80 @@
+// 基于axios的封装
+import axios from 'axios'
+import qs from 'qs' // 将对象转成 xx=xx&&xx=xx
+
+/*
+ *   根据环境变量区分接口的默认地址
+ */
+
+switch (process.env.NODE_ENV) {
+    case "production":
+        axios.defaults.baseURL = "http://api/product"
+        break;
+    case "test":
+        axios.defaults.baseURL = "http://192.168.20.12:8080"
+        break;
+    default:
+        axios.defaults.baseURL = "http://127.0.0.1:8080"
+}
+/*
+ *   设置超时时间和跨域是否允许携带凭证
+ */
+axios.defaults.timeout = 10000;
+axios.defaults.withCredentials = true
+
+/*
+ *  设置请求传递数据格式
+ *  x-www-form-urlencoded
+ */
+
+axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+axios.defaults.transformRequest = data => qs.stringify(data)
+
+/*
+ *   设置请求拦截器
+ *   客户端发送请求 -> [请求拦截器] -> 服务器
+ *   TOKEN校验：接受服务器返回的TOKEN,存储到本地，之后的每一次请求都应该带上token
+ */
+
+axios.interceptors.request.use((config) => {
+    // 携带token
+    let token = localStorage.getItem('token');
+    token && (config.headers.Authorization = token) // 拿到token给请求头上添加token
+    return config
+}, error => {
+    return Promise.reject(error)
+})
+
+/*
+ *   响应拦截器
+ *   服务器 ->  [拦截器统一处理] -> 客户端js获取到的信息
+ */
+
+axios.defaults.validateStatus = status => {
+    return /^(2|3)\d{2}$/.test(status) // 返回状态码是2或3开头视为响应成功
+}
+
+axios.interceptors.response.use(response => {
+    return response.data // 可以直接返回数据data，这样在请求的response里直接是data的数据
+}, error => {
+    let { response } = error
+    if (response) { // 服务器返回了结果
+        switch (response.status) {
+            case 401: // 权限
+                break;
+            case 403: // token过期，没有权限
+                break;
+            case 404: // 找不到页面
+                break;
+        }
+    } else { // 服务器没有结果
+        if (!window.navigator.onLine) { // 网络中断
+            // -> 可以跳转到事先的断网页面，并给路由传递当前的url，在断网页面成功连接跳转回此页面
+            return
+        }
+        return Promise.reject(error) // 服务器异常
+
+    }
+})
+
+export default axios

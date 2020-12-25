@@ -1,0 +1,35 @@
+一.编码优化：
+1.不要将所有的数据都放在data中，data中的数据都会增加getter和setter，会收集对应的watcher
+2.vue 在v-for时给每项元素绑定事件需要用事件代理
+3.SPA页面采用keep-alive缓存组件
+4.拆分组件（提高复用性、增加代码的可维护性，减少不必要的渲染）
+5.v-if 当值为false时内部指令不会执行，具有阻断功能，很多情况下使用v-if替代v-show
+6.key 保证唯一性（默认vue会采用就地复用策略）
+7.Object.freeze 冻结数据
+8.合理使用路由懒加载、异步组件
+9.尽量采用runtime运行时版本
+10.数据持久化的问题（防抖、节流）
+
+二.Vue加载性能优化：
+1.第三方模块按需导入（babel-plugin-component）
+2.滚动到可视区域动态加载 vue-virtual-scroll-list （只显示当前页、上一页和下一页数据，用来控制dom的数量）
+3.图片懒加载 vue-lazyload
+
+三.用户体验：
+1.app-skeleton 骨架屏 loading插件，未渲染时，弹出一个内容盖住，给用户体用好一些
+2.app-shell app壳
+3.pwa serviceworker
+
+四.SEO优化：
+1.预渲染插件 prerender-spa-plugin
+2.服务端渲染ssr
+
+五.打包优化：
+1.使用cdn的方式加载第三方模块
+2.多线程打包happypack
+3.splitChunks抽离公共文件
+4.sourceMap 生成
+
+六.缓存、压缩
+1.客户端缓存、服务端缓存
+2.服务端gzip压缩

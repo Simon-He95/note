@@ -1,0 +1,19 @@
+介绍：
+   常见的koa模板引擎选择：jade、ejs、nunjucks、art-template等
+   art-template支持ejs的语法，也可以用类似angular数据绑定的语法
+
+安装art-template、koa-art-template：
+   npm i art-template koa-art-template -S
+
+配置：
+   const render = require('koa-art-template') // 引入
+   render(app, {
+      root: path.join(__dirname, 'view'), // 试图位置
+      extname: '.html', // 后缀名
+      debug: process.env.NODE_ENV !== ‘production’// 是否开启调试模式
+   })
+
+使用：
+   router.get('/', async ctx => {
+       await ctx.render('index')
+   })

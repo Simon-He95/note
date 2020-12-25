@@ -1,0 +1,7 @@
+使用crypto.js
+npm i crypto-js
+
+模板中使用：
+import CryptoJS from 'crypto-js'
+
+CryptoJS.MD5(this.password).toString()

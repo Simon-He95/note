@@ -1,0 +1,98 @@
+安装：
+npm i -g koa-generator
+
+生产项目：(-e使用ejs模板引擎)
+koa2 -e koa2-learn
+
+cd koa2-learn
+
+npm install
+
+安装mongodb
+
+git bash：which mongod // 判断是否安装成功
+
+mongbd 启动服务器
+
+安装Robo 3T：mongodb数据库可视化的工具
+
+安装mongoose:
+npm i mongoose
+
+mkdir dbs
+mkdir dbs/models
+mkdir dbs/config.js dbs/models/person.js
+
+config.js中建立数据库连接
+module.exports = {
+    dbs: 'mogodb://127.0.0.1:27017/dbs'
+}
+
+在app.js引入mongoose和dbConfig
+const mongoose = require('mongoose')
+const dbConfig = require('./dbs/config')
+//建立数据库连接
+mongoose.connect(dbConfig.dbs, {
+    useNewUrlParser: true 
+})
+
+在路由中引入Person
+    const router = require('koa-router')()
+    const Person = require('../dbs/models/person')
+
+    router.post('/addPerson', async (ctx) => { // 数据库里添加数据
+        const person = new Person({
+            name: ctx.request.body.name,
+            age: ctx.request.body.age
+        })
+        let code
+        try {
+            await person.save() // model中定义好的save方法
+            code = 0
+        } catch (e) {
+            code = -1
+        }
+
+        ctx.body = {
+            code: code
+        }
+    })
+
+    router.post('/getPerson', async (ctx) => { // 查询数据库中数据
+        const result = await Person.find({ // 从模型中读取数据
+            name: ctx.request.body.name
+        })
+        ctx.body = {
+            code: 0,
+            result
+        }
+    })
+
+    router.post('/updatePerson', async (ctx) => { // 更新数据库中数据
+        const result = await Person.where({ // 从模型中读取数据
+            name: ctx.request.body.name
+        }).updata({
+            age: ctx.request.body.age
+        })
+        ctx.body = {
+            code: 0,
+            result
+        }
+    })
+
+    router.post('/removePerson', async (ctx) => { // 删除数据库中数据
+        const result = await Person.where({ // 从模型中读取数据
+            name: ctx.request.body.name
+        }).remove()
+        ctx.body = {
+            code: 0,
+            result
+        }
+    })
+
+module.exports = router
+
+post请求命令行传参：(curl是linux命令,-d代表post请求)
+curl -d 'name=zhangsan&age=27' http://localhost:3000/addPerson 
+curl -d 'name=zhangsan' http://localhost:3000/getPerson 
+curl -d 'name=zhangsan&age=11' http://localhost:3000/updatePerson 

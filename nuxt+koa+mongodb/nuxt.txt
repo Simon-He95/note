@@ -1,0 +1,20 @@
+安装：
+vue init nuxt-community/koa-template nuxt-learning
+
+cd nuxt-learning
+
+npm install
+
+npm run dev
+
+模板中请求后台数据ssr
+
+原本使用creat
+现在使用async asyncData(){
+let { status, data: {list} } = await axios.get(http://localhost:3000/city/list)
+  if (status === 200) {
+    return {
+      list
+    }
+  }
+}

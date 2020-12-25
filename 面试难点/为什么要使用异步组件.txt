@@ -1,0 +1,8 @@
+理解：
+   如果组件功能多 打包出的结果会变大，我们可以次啊用异步的方式来加载组件。主要依赖import（）这个语法，可以实现文件的分割加载。
+
+components：{
+	AddCustomerSchedule：（resolve）=> import（“../components/AddCustomer”）
+}
+
+储存成Promise的语法并存在注释中，等到执行时通过factory（resolve，reject），通过forceRender强制更新传入resolve去执行Promise返回结果，完成异步的加载

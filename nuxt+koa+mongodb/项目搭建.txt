@@ -1,0 +1,24 @@
+安装npx:
+npm i -g npx
+
+创建项目：
+npx create-nuxt-app mt-app
+
+配置：
+koa
+element-ui
+Universal    // ssr
+axios
+eslint
+npm 
+
+项目未配置babel无法识别import
+package.json
+中配置 --exec babel-node
+
+安装babel-preset-es2015:
+  npm i babel-preset-es2015
+新建.babelrc
+  {
+      "presets": ["es2015"]
+  }

@@ -1,0 +1,12 @@
+<input type="text" v-bind:value='msg' v-on:input='change' />		v-model 相当于 v-bind + @input
+
+data () {
+  return {
+    msg: '绑定内容'
+  }
+},
+methods: {
+  change (e) {
+    this.msg = e.target.value
+  } 
+}

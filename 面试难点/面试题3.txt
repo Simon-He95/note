@@ -1,0 +1,24 @@
+// var a = ? , a==1&&a==2&&a==3
+//1.改写toString方法
+// var a = {
+//     i: 0,
+//     toString() {
+//         return ++this.i
+//     }
+// }
+// if (a == 1 && a == 2 && a == 3) {
+//     console.log('条件成立')
+// }
+// 2.设置defineProperty,需要在html中执行，否则拿不到window
+// var i = 0
+// Object.defineProperty(window, 'a', {
+//     get() {
+//         return ++i
+//     },
+//     set() {
+
+//     }
+// })
+// if (a == 1 && a == 2 && a == 3) {
+//     console.log('条件成立')
+// }

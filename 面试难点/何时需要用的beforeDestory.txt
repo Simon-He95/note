@@ -1,0 +1,4 @@
+理解：
+1.可能在当前页面中使用了$on方法，那需要在组件销毁前解绑 => $off('event')
+2.清除自己定义的定时器
+3.解除事件的绑定scroll mousemove => @click = 'eventBtn && (事件) // eventBtn 定义需要的时候设置为 true 就可以了

@@ -1,0 +1,14 @@
+// 解决1s内重复点击只记录最后一次操作
+        let btn = document.getElementById('btn')
+        function fangdou(fn) {
+            let Timer = null
+            return function() {
+             clearTimeout(Timer)
+             Timer = setTimeout(() => {
+                 fn.call(this,arguments)
+             },1000)
+            }
+        }
+        btn.onclick = fangdou(() => {
+            console.log('成功防抖')
+        })

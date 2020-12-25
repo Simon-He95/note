@@ -1,0 +1,46 @@
+理解：
+1.插槽：
+   创建组件虚拟节点时，会将组件的儿子的虚拟节点保存起来。当初始化组件时，通过插槽属性将儿子进行分类{a：[vnode]，b：[vnode]}
+   渲染组件时会拿对应的slot属性的节点进行替换操作。（插槽的作用为父组件）
+
+2.作用域插槽：
+   作用域插槽在解析的时候，不会作为组件的孩子节点。会解析成函数，当子组件渲染时，会调用次函数进行渲染。（插槽的作用域为子组件）
+
+区别：渲染的作用域不同，普通插槽在父组件渲染，而作用域插槽在子组件渲染时候才渲染
+
+普通插槽：
+父亲<panel><h4 slot="a">标题</h4><div slot="b">内容</div></panel>
+儿子panel组件：<slot name="a" /><slot name="b" />
+
+渲染是在父组件中而不是在panel组件内渲染，外侧渲染成虚拟节点，分类成a:[vnode]、b[vnode]，在调用组件时，用虚拟节点替换slot name=a、slot name=b
+编译结果：with(this){ //_c创建dom节点，_v创建文本节点
+	   return _c('panel', [_c('h4', { attrs: { "slot": "a" },slot: "a" }, [_v("标题")]), _c('div', { attrs: { "slot": "b" }, slot: "b" }, _v("内容"))])
+	}
+渲染时：with(this){
+	   return _c('h4', [_t("a"), _t("b")]) //通过_t = renderSlot会将原本name=a和b的内容直接替换成编译后的虚拟节点中对应的数组 => return _c('h4', [[_v("标题")],  _v("内容")])
+	}
+作用域插槽：
+   父：<app>
+	<div slot-scope="msg" slot="footer">{{ msg.a }}</div>
+         </app>
+   子：<div>
+	<slot name="footer" a="1" b="2" />
+         </div>
+编译结果：with(this){
+	   return _c('app', { //这里编译出的是一个属性；普通slot这里编译出儿子 
+	      scopedSlots: _u([{ // 作用域插槽的内容会被渲染成一个函数
+		key: "footer",
+		fn: function (msg) { // 并且把内容变成了一个函数，并没有调用
+		   return _c('div', {}, [_v(_s(msg.a))])
+		}
+	      }])
+	   })
+	}
+渲染时：with(this){
+	   return _c('div', [_t("footer", null, { // 在组件内部去调用这个函数得到msg.a
+		"a": "1",
+		"b": "2"
+	   })])
+	}
+
+

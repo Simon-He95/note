@@ -1,0 +1,19 @@
+项目未配置babel无法识别import
+package.json
+中配置 --exec babel-node
+
+安装babel-preset-es2015:
+  npm i babel-preset-es2015
+新建.babelrc
+  {
+      "presets": ["es2015"]
+  }
+
+如果在node环境下，开发环境dev是可以识别，但是production环境下不行
+1.可以同过babel-node去执行，它依赖于babel-cli
+   "start": "cross-env NODE_ENV=production babel-node server/index.js --exec babel-node"
+
+或者
+2.从版本8.5.0开始，通过一个命令行选项：experimental-modules，Node.js就能支持原生的ES模块。
+   需要将 Node 源码文件后缀名改成.mjs。
+   node --experimental-modules main.mjs

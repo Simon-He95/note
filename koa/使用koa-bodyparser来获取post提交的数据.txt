@@ -1,0 +1,11 @@
+安装koa-bodyparser：
+   npm i koa-bodyparser --save
+
+配置：
+   const bodyParser = require('koa-bodyparser')
+   app.use(bodyParser)
+
+使用：
+   router.post('/doPost', async ctx => { // ‘/doPost’ =>  <form action="/doPost" method="post">
+      ctx.body = ctx.request.body
+   })
